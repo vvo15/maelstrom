@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "brain-contract-guard",
+      "trigger": "PostFileSave",
+      "action": {
+        "type": "command",
+        "command": "cd gateway && (npx tsc --noEmit || (echo \"CONTRACT GUARD: gateway broke\" && exit 1)) && if [ -d ../dashboard/node_modules ]; then cd ../dashboard && (npx tsc --noEmit || (echo \"CONTRACT GUARD: dashboard broke\" && exit 1)); fi"
+      },
+      "description": "When a shared contract file is saved, type-check the gateway (and the dashboard if installed) so a schema change can't silently break another module.",
+      "matcher": "(^|/)shared/.*\\.ts$",
+      "enabled": true
+    }
+  ]
+}

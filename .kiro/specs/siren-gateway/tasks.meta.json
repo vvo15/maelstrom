@@ -1,0 +1,737 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Create `gateway/tsconfig.json`, internal types, and config reader": [
+      {
+        "executionId": "f2c886f5-6385-4058-9021-30e9efd174c9",
+        "chatSessionId": "sess_cce3a42d-40cf-4f8b-8880-1c9ed2aa15e3",
+        "timestamp": 1792866146290
+      },
+      {
+        "executionId": "f2c886f5-6385-4058-9021-30e9efd174c9",
+        "chatSessionId": "sess_cce3a42d-40cf-4f8b-8880-1c9ed2aa15e3",
+        "timestamp": 1792866266961
+      }
+    ],
+    "1. Project and build scaffolding": [
+      {
+        "executionId": "f2c886f5-6385-4058-9021-30e9efd174c9",
+        "chatSessionId": "sess_cce3a42d-40cf-4f8b-8880-1c9ed2aa15e3",
+        "timestamp": 1792866267013
+      }
+    ],
+    "2.1 Implement the decoy forwarder `io/decoy.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457580
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866466670
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866529469
+      }
+    ],
+    "2.3 Implement the JSONL replay writer `io/replay.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457638
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866467992
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866530815
+      }
+    ],
+    "2.4 Implement the WebSocket server `io/wsServer.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457685
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866468975
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866531800
+      }
+    ],
+    "2.5 Implement the emitter `io/emitter.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457730
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866535710
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866613609
+      }
+    ],
+    "2.6 Implement the request handler `io/server.ts` with a stubbed detector": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457765
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866714845
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866805084
+      }
+    ],
+    "2.7 Create `session/sessionStore.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457811
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866469982
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866532722
+      }
+    ],
+    "2.8 Create a minimal `gateway/src/index.ts` entry point and `start` script": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457946
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866808032
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866943598
+      }
+    ],
+    "3. Checkpoint - proxy + stream run green": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866457981
+      },
+      {
+        "executionId": "fefa12a7-4a77-404a-a3fe-d7cb09633775",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867022158
+      },
+      {
+        "executionId": "fefa12a7-4a77-404a-a3fe-d7cb09633775",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867050307
+      }
+    ],
+    "4.1 Implement `detector/sessionId.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458023
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867262289
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867317664
+      }
+    ],
+    "4.2 Write property test for session id shape": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458079
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867320907
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867388027
+      }
+    ],
+    "4.3 Implement `detector/signals.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458121
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867388623
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867476615
+      }
+    ],
+    "4.4 Write property test for canary presence": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458166
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867476566
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867550511
+      }
+    ],
+    "4.5 Write example test for repeated canary string (non-property guard)": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458201
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867551213
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867593220
+      }
+    ],
+    "4.7 Implement `detector/score.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458240
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867593766
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867633984
+      }
+    ],
+    "4.8 Write property test for bounded score": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458285
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867634522
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867694742
+      }
+    ],
+    "4.9 Implement `detector/route.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458331
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867695424
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867737047
+      }
+    ],
+    "4.10 Write property test for monotonic score": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458381
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867737806
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867888760
+      }
+    ],
+    "4.11 Write property test for latched flag implies maze routing": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458435
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867889019
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867981840
+      }
+    ],
+    "5. Checkpoint - detector unit + property tests pass": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458559
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867982588
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868036861
+      }
+    ],
+    "6.1 Implement the maze adapter `io/mazeAdapter.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458587
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869675312
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869719793
+      }
+    ],
+    "6.2 Implement `detector/burn.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458617
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868353835
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868408658
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868626303
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868724991
+      }
+    ],
+    "6.3 Write property test for non-decreasing burn totals": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458652
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868408618
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868726423
+      }
+    ],
+    "6.4 Wire detection, scoring, flag latching, and routing into `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458705
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869720758
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869948865
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872128901
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872211096
+      }
+    ],
+    "6.5 Implement `/verify` agent/task capture in `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458752
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869949300
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870030451
+      }
+    ],
+    "6.7 Wire burn accounting into `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458788
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870030834
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870150067
+      }
+    ],
+    "6.8 Wire non-blocking prediction enrichment into `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458818
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870157742
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870280554
+      }
+    ],
+    "7. Checkpoint - routing and enrichment wired": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458852
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870535137
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870633136
+      }
+    ],
+    "8.1 Handle decoy failure and timeout in `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458887
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868739898
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868898584
+      }
+    ],
+    "8.2 Handle `maze.generate` failure in `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458923
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870281062
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870406155
+      }
+    ],
+    "8.3 Handle `predict` and `estimateBurn` failures in `io/server.ts`": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458959
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870407069
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870534607
+      }
+    ],
+    "9.1 Extend `gateway/src/index.ts` (created in 2.8) with process-level handlers": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866458990
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871323585
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871450937
+      }
+    ],
+    "9.2 Write required integration test: transparent proxy forwarding": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866459024
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871450972
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871550969
+      }
+    ],
+    "9.3 Write required integration test: routing decoy then maze (Property 3 end to end)": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866459067
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871552189
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871633396
+      }
+    ],
+    "9.4 Write required integration test: decoy failure returns 502 with exactly one event": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866459126
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871633368
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871728611
+      }
+    ],
+    "9.5 Write required integration test: WebSocket last-500 backlog": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866459173
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871729216
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871868956
+      }
+    ],
+    "9.7 Write required property test: replay round-trip": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866459229
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871869016
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872069761
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872127952
+      }
+    ],
+    "10. Final checkpoint - full build and tests green": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866459297
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872210191
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872372838
+      }
+    ],
+    "2.2 Write unit tests for `io/decoy.ts` header handling": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866627048
+      },
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866712325
+      }
+    ],
+    "2. Transparent HTTP proxy, emission, replay, and WebSocket stream (detector stubbed to \"no signals\")": [
+      {
+        "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792866943670
+      }
+    ],
+    "4. Pure Detector core": [
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867981886
+      }
+    ],
+    "4.12 Write example test for the scripted attacker sequence": [
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868295130
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868353176
+      }
+    ],
+    "6. Wire the detector, routing, verify capture, burn, and prediction into the request lifecycle": [
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870280586
+      }
+    ],
+    "8. Error handling and resilience": [
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870534654
+      }
+    ],
+    "9. Final wiring and verification": [
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872127987
+      }
+    ]
+  }
+}
