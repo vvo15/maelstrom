@@ -1,4 +1,8 @@
-# Siren Dashboard — Progress Log
+# Maelstrom Dashboard — Progress Log
+
+> The product was renamed from **Siren** to **Maelstrom** on 2026-10-24. Older entries and
+> internal names (`SirenEvent`, the `SIREN_` canary prefix, `SIREN_LLM`) still say Siren;
+> those are shared with other lanes and are unchanged.
 
 Living documentation for the Stage lane (the dashboard, hosted demo, and submission
 materials). This file is updated at the end of every work session so anyone can see,
@@ -43,7 +47,7 @@ Then have Kiro Crew walk the hosted URL like a first-time judge.
 
 ## What the dashboard does
 
-Siren watches an AI attacker get detected and trapped in a fake town-services portal.
+Maelstrom watches an AI attacker get detected and trapped in a fake town-services portal.
 The dashboard is a **read-only consumer** of `SirenEvent` (imported as a type only); it
 never adds fields to the schema and derives everything it shows.
 
@@ -191,7 +195,7 @@ npm run build               # tsc -b && vite build
 npm run replay:sample       # regenerate public/replays/sample-attack.jsonl from mock data
 npm run replays:curate -- ../replays/<startMs>.jsonl --name crew-flagged --title "Kiro Crew follows the bait"
 npm run replays:index       # make index.json match the .jsonl files on disk
-BASE_PATH=/siren-Hackachusetts-/ npm run build   # build for GitHub Pages sub-path
+BASE_PATH=/maestrom/ npm run build   # build for the GitHub Pages sub-path (the repo name)
 ```
 
 ### Curating replays
@@ -299,8 +303,13 @@ canary paths, and drove the production dashboard in headless Chrome in Live mode
 passed (see "Session 4 additions"). Closes the "WebSocket message shape assumed" gap: it is one
 `SirenEvent` per message.
 
-**Next session:** Integration 2 once Labyrinth's maze lands (burn and prediction); product
-rename to Maelstrom.
+**Rename (level 1):** user-visible name changed to Maelstrom: header, page title and
+description, replay banner link, repo URL fallback (`vvo15/maestrom`), the view-mode storage
+key (`maelstrom.viewMode`, which resets the Town IT setting once), and these docs. Shared
+names (`SirenEvent`, `SIREN_` canary prefix, `SIREN_LLM`, other lanes' files) are untouched,
+pending a team decision.
+
+**Next session:** Integration 2 once Labyrinth's maze lands (burn and prediction).
 
 ### 2026-10-24 — Session 3: Prompt C, hosted demo
 

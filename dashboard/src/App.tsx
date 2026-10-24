@@ -15,8 +15,8 @@ import { computeTotals, defaultSessionId } from "./sessions";
 import { LIVE_URL } from "./sources/live";
 import { useFeed } from "./useFeed";
 
-const REPO_URL: string = import.meta.env.VITE_REPO_URL ?? "https://github.com/vvo15/siren-Hackachusetts-";
-const MODE_KEY = "siren.viewMode";
+const REPO_URL: string = import.meta.env.VITE_REPO_URL ?? "https://github.com/vvo15/maestrom";
+const MODE_KEY = "maelstrom.viewMode";
 
 function readMode(): ViewMode {
   try {
@@ -92,7 +92,7 @@ export default function App() {
 
       <header className="app-header">
         <div className="brand">
-          <h1>Siren</h1>
+          <h1>Maelstrom</h1>
           <p>{copy.tagline}</p>
         </div>
         <button

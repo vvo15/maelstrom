@@ -315,7 +315,7 @@ export const COPY: Record<ViewMode, Copy> = {
         }
       },
       banner: "Watching a recorded attack.",
-      bannerLink: "Run Siren yourself on GitHub",
+      bannerLink: "Run Maelstrom yourself on GitHub",
     },
   },
 
