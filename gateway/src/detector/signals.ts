@@ -88,7 +88,7 @@ function hasCanary(current: RequestMeta): boolean {
  * ordered by ts and the latest 12 kept; gaps are taken between
  * consecutive entries. Comparisons are strict (> 2000, < 800).
  */
-function hasThinkPauses(history: SirenEvent[], current: RequestMeta): boolean {
+function hasThinkPauses(history: readonly SirenEvent[], current: RequestMeta): boolean {
   const times = history.map((e) => e.ts);
   times.push(current.ts);
   times.sort((a, b) => a - b);
@@ -119,7 +119,7 @@ function hasThinkPauses(history: SirenEvent[], current: RequestMeta): boolean {
  * does not fire. Integer arithmetic avoids floating-point edge errors at
  * exactly 30%.
  */
-function hasEnumeration(history: SirenEvent[], current: RequestMeta): boolean {
+function hasEnumeration(history: readonly SirenEvent[], current: RequestMeta): boolean {
   const windowStart = current.ts - ENUM_WINDOW_MS;
   const inWindow = history.filter(
     (e) => e.ts >= windowStart && e.ts <= current.ts
@@ -150,7 +150,7 @@ function isScriptedUa(userAgent: string): boolean {
  * Set; this function never returns duplicates either).
  */
 export function detectSignals(
-  history: SirenEvent[],
+  history: readonly SirenEvent[],
   current: RequestMeta
 ): Signal[] {
   const out: Signal[] = [];

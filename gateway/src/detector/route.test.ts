@@ -14,9 +14,9 @@ import fc from "fast-check";
 import type { SirenEvent } from "../../../shared/events";
 import { BAIT_PATHS, canaryFor, type CanaryKind } from "../../../shared/contracts";
 import type { Signal } from "../types";
-import { detectSignals, SCRIPTED_UA_TOKENS, type RequestMeta } from "./signals";
-import { latchFlag, scoreSignals } from "./score";
-import { decideRoute, type RouteDecision } from "./route";
+import { SCRIPTED_UA_TOKENS, type RequestMeta } from "./signals";
+import type { RouteDecision } from "./route";
+import { updateSession } from "./sessionUpdate";
 
 const SESSION_ID = "0123456789abcdef";
 const BROWSER_UA =
@@ -27,15 +27,14 @@ type State = { history: SirenEvent[]; signals: Set<Signal>; flagged: boolean };
 type Outcome = { route: RouteDecision; flagged: boolean };
 
 /**
- * Pure mirror of the design's per-request lifecycle (production fold is
- * wired in task 6.4): routing uses the PRE-scoring flagged state.
+ * One request through the production `updateSession` (the same function
+ * `io/server.ts` uses); the test only writes back its result and appends
+ * the emitted-style event to `history`.
  */
 function step(state: State, { req, status }: Step): Outcome {
-  const flaggedBefore = state.flagged;
-  const route = decideRoute(flaggedBefore);
-  for (const s of detectSignals(state.history, req)) state.signals.add(s);
-  const aiScore = scoreSignals(state.signals);
-  const flagged = latchFlag(flaggedBefore, aiScore);
+  const u = updateSession(state, state.history, req);
+  const { route, aiScore, flagged } = u;
+  state.signals = u.signals;
   state.flagged = flagged;
   state.history.push({
     session_id: SESSION_ID,

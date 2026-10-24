@@ -11,9 +11,9 @@
 import { describe, expect, it } from "vitest";
 import type { SirenEvent } from "../../../shared/events";
 import type { Signal } from "../types";
-import { detectSignals, type RequestMeta } from "./signals";
-import { latchFlag, scoreSignals } from "./score";
-import { decideRoute, type RouteDecision } from "./route";
+import type { RequestMeta } from "./signals";
+import type { RouteDecision } from "./route";
+import { updateSession } from "./sessionUpdate";
 
 const SESSION_ID = "0123456789abcdef";
 const UA = "python-httpx/0.27.0";
@@ -22,15 +22,14 @@ type State = { history: SirenEvent[]; signals: Set<Signal>; flagged: boolean };
 type Outcome = { route: RouteDecision; flagged: boolean; aiScore: number };
 
 /**
- * Local mirror of the per-request lifecycle (same order as route.test.ts).
- * TODO: replace with the shared session-update function once it is extracted.
+ * One request through the production `updateSession` (the same function
+ * `io/server.ts` uses); the test writes back its result and appends the
+ * emitted-style event to `history`.
  */
 function step(state: State, req: RequestMeta, status: number): Outcome {
-  const flaggedBefore = state.flagged;
-  const route = decideRoute(flaggedBefore);
-  for (const s of detectSignals(state.history, req)) state.signals.add(s);
-  const aiScore = scoreSignals(state.signals);
-  const flagged = latchFlag(flaggedBefore, aiScore);
+  const u = updateSession(state, state.history, req);
+  const { route, aiScore, flagged } = u;
+  state.signals = u.signals;
   state.flagged = flagged;
   state.history.push({
     session_id: SESSION_ID,

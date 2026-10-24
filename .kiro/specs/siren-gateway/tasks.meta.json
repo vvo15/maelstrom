@@ -348,6 +348,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458587
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869675312
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869719793
       }
     ],
     "6.2 Implement `detector/burn.ts`": [
@@ -399,6 +409,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458705
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869720758
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869948865
       }
     ],
     "6.5 Implement `/verify` agent/task capture in `io/server.ts`": [
@@ -406,6 +426,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458752
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792869949300
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870030451
       }
     ],
     "6.7 Wire burn accounting into `io/server.ts`": [
@@ -413,6 +443,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458788
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870030834
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870150067
       }
     ],
     "6.8 Wire non-blocking prediction enrichment into `io/server.ts`": [
@@ -420,6 +460,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458818
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870157742
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870280554
       }
     ],
     "7. Checkpoint - routing and enrichment wired": [
@@ -427,6 +477,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458852
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870535137
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870633136
       }
     ],
     "8.1 Handle decoy failure and timeout in `io/server.ts`": [
@@ -451,6 +511,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458923
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870281062
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870406155
       }
     ],
     "8.3 Handle `predict` and `estimateBurn` failures in `io/server.ts`": [
@@ -458,6 +528,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458959
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870407069
+      },
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870534607
       }
     ],
     "9.1 Extend `gateway/src/index.ts` (created in 2.8) with process-level handlers": [
@@ -545,6 +625,20 @@
         "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792868353176
+      }
+    ],
+    "6. Wire the detector, routing, verify capture, burn, and prediction into the request lifecycle": [
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870280586
+      }
+    ],
+    "8. Error handling and resilience": [
+      {
+        "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792870534654
       }
     ]
   }

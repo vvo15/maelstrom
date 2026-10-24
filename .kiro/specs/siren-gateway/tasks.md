@@ -132,8 +132,8 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
 - [x] 5. Checkpoint - detector unit + property tests pass
   - Ensure all tests pass with `vitest --run`, ask the user if questions arise.
 
-- [ ] 6. Wire the detector, routing, verify capture, burn, and prediction into the request lifecycle
-  - [~] 6.1 Implement the maze adapter `io/mazeAdapter.ts`
+- [x] 6. Wire the detector, routing, verify capture, burn, and prediction into the request lifecycle
+  - [x] 6.1 Implement the maze adapter `io/mazeAdapter.ts`
     - Import the Maze implementation from `../maze` and export it typed as the `Maze` interface from `shared/contracts.ts`; this is the single import site and nothing under `gateway/src/maze` is created or modified
     - Verify with `tsc --noEmit`
     - _Requirements: 6.5, 6.6_
@@ -148,12 +148,12 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Arbitrary: arrays of raw values from `fc.oneof` over normal doubles, negatives, and pathological `NaN`/`Infinity`/`-Infinity`; fold through `applyBurn` and assert each running total is `>=` the previous and stays finite; minimum 100 iterations
     - **Validates: Requirements 7.2, 7.3, 7.4, 7.5 (Property 6)**
 
-  - [~] 6.4 Wire detection, scoring, flag latching, and routing into `io/server.ts`
+  - [x] 6.4 Wire detection, scoring, flag latching, and routing into `io/server.ts`
     - Capture `flaggedBeforeScoring` from session state before scoring; run `detectSignals`, union new signals into `session.signals`, set `ai_score = scoreSignals(...)`, latch `flagged`, and compute `route = decideRoute(flaggedBeforeScoring)`
     - When route is `maze`, build a `MazeRequest` (session_id, method, path, body, history) and call `maze.generate`; return its status/headers/body. When route is `decoy`, forward as before. The first-flagging request still goes to the Decoy while its emitted `flagged` is the post-scoring `true`
     - _Requirements: 2.2, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 9.4_
 
-  - [~] 6.5 Implement `/verify` agent/task capture in `io/server.ts`
+  - [x] 6.5 Implement `/verify` agent/task capture in `io/server.ts`
     - When the path is `/verify`, read the `agent` query parameter into `session.model_claim` and the `task` query parameter into `session.stated_goal`
     - _Requirements: 3.1, 3.2_
 
@@ -161,27 +161,27 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Assert `model_claim` comes from `agent` and `stated_goal` from `task`
     - _Requirements: 3.1, 3.2_
 
-  - [~] 6.7 Wire burn accounting into `io/server.ts`
+  - [x] 6.7 Wire burn accounting into `io/server.ts`
     - After producing the response body, call `maze.estimateBurn(responseBody, model_claim)` and fold the returned tokens/usd into the running totals via `applyBurn` (clamping neg/NaN/Infinity to 0)
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-  - [~] 6.8 Wire non-blocking prediction enrichment into `io/server.ts`
+  - [x] 6.8 Wire non-blocking prediction enrichment into `io/server.ts`
     - While flagged and the session request count reaches a multiple of 5, call `maze.predict(history)` fire-and-forget (return the response without awaiting); on resolve store the latest prediction, and attach the stored prediction to each subsequent `SirenEvent`
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-- [~] 7. Checkpoint - routing and enrichment wired
+- [x] 7. Checkpoint - routing and enrichment wired
   - Ensure `tsc` build passes and all tests pass with `vitest --run`, ask the user if questions arise.
 
-- [ ] 8. Error handling and resilience
+- [x] 8. Error handling and resilience
   - [x] 8.1 Handle decoy failure and timeout in `io/server.ts`
     - Catch connection errors and 10s aborts from `forwardToDecoy`; return status 502 to the client and emit exactly one `SirenEvent` with `status = 502` and `route = "decoy"`
     - _Requirements: 11.1_
 
-  - [~] 8.2 Handle `maze.generate` failure in `io/server.ts`
+  - [x] 8.2 Handle `maze.generate` failure in `io/server.ts`
     - Wrap `maze.generate` in try/catch; on throw/reject return status 500 with `DECOY_HEADERS` and emit exactly one `SirenEvent` (`route = "maze"`, `status = 500`)
     - _Requirements: 11.2_
 
-  - [~] 8.3 Handle `predict` and `estimateBurn` failures in `io/server.ts`
+  - [x] 8.3 Handle `predict` and `estimateBurn` failures in `io/server.ts`
     - Attach a `.catch` to the fire-and-forget `predict` that logs and leaves `latestPrediction` unchanged; wrap `estimateBurn` in try/catch that logs and leaves both running totals unchanged
     - _Requirements: 11.3, 11.4_
 

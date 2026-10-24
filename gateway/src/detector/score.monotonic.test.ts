@@ -13,27 +13,26 @@ import { describe, expect, it } from "vitest";
 import fc from "fast-check";
 import type { SirenEvent } from "../../../shared/events";
 import { BAIT_PATHS, canaryFor, type CanaryKind } from "../../../shared/contracts";
-import type { Signal } from "../types";
-import { detectSignals, SCRIPTED_UA_TOKENS, type RequestMeta } from "./signals";
-import { scoreSignals } from "./score";
+import { SCRIPTED_UA_TOKENS, type RequestMeta } from "./signals";
+import { updateSession, type SessionSnapshot } from "./sessionUpdate";
 
 const SESSION_ID = "0123456789abcdef";
 
 type Step = { req: RequestMeta; status: number };
 
 /**
- * Pure mirror of the design's session update (the production fold is wired
- * in task 6.4). Signals accumulate in a Set so each is recorded at most once
- * (Req 4.6); the score is recomputed from the whole set (Req 5.2).
+ * Folds the sequence through the production `updateSession` (the same
+ * function `io/server.ts` uses), threading its returned state forward and
+ * appending one emitted-style event per request to `history`.
  */
 function foldScores(steps: Step[]): number[] {
   const history: SirenEvent[] = [];
-  const recorded = new Set<Signal>();
+  let state: SessionSnapshot = { signals: new Set(), flagged: false };
   const scores: number[] = [];
   for (const { req, status } of steps) {
-    for (const s of detectSignals(history, req)) recorded.add(s);
-    const aiScore = scoreSignals(recorded);
-    scores.push(aiScore);
+    const u = updateSession(state, history, req);
+    state = { signals: u.signals, flagged: u.flagged };
+    scores.push(u.aiScore);
     history.push({
       session_id: SESSION_ID,
       ts: req.ts,
@@ -42,10 +41,10 @@ function foldScores(steps: Step[]): number[] {
       user_agent: req.userAgent,
       body_snippet: req.body.slice(0, 500),
       status,
-      route: "decoy",
-      ai_score: aiScore,
-      signals: [...recorded],
-      flagged: false,
+      route: u.route,
+      ai_score: u.aiScore,
+      signals: [...u.signals],
+      flagged: u.flagged,
       est_tokens_burned: 0,
       est_usd_burned: 0,
     });
