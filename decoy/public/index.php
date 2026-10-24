@@ -5,6 +5,9 @@
  * Nothing here is exploitable.
  */
 
+// Must equal DECOY_HEADERS["x-powered-by"] in shared/contracts.ts (expose_php is off).
+header('X-Powered-By: PHP/8.3.12');
+
 // Read session id from gateway header (fallback for direct hits)
 $sessionId = $_SERVER['HTTP_X_SIREN_SESSION'] ?? 'local000000000000';
 

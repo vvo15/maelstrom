@@ -6,9 +6,11 @@ Each task maps to one or more requirements. Only edit `/decoy`.
 ---
 
 - [x] **TASK-D-01: Apache + PHP scaffold**  
-  Create `decoy/Dockerfile` (php:8.3-apache), `decoy/apache.conf` with `mod_rewrite`,
-  `mod_headers`, and `DECOY_HEADERS` always set. Create `decoy/public/index.php` router
-  dispatching all paths to `decoy/pages/`.  
+  Create `decoy/Dockerfile` pinned to `php:8.3.12-apache` (its Apache build is 2.4.62, and
+  `mod_headers` can't override `Server`), `decoy/apache.conf` with `ServerTokens OS` and
+  `FallbackResource`, and `decoy/php.ini` with `expose_php = Off`. Create
+  `decoy/public/index.php` router that sends `X-Powered-By: PHP/8.3.12` and dispatches all
+  paths to `decoy/pages/`.  
   *Requirements:* REQ-D-16, REQ-D-20  
   *Done when:* `docker compose up decoy` starts without errors.
 

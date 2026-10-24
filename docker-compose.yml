@@ -1,52 +1,57 @@
-version: "3.9"
+# Siren local stack.
+# Quickstart: cp .env.example .env && docker compose up
+# Attacker:   docker compose run --rm attacker
+# .env is optional: with no .env, SIREN_LLM falls back to mock (no API key needed).
 
 networks:
-  internal:
-    driver: bridge
-  public:
-    driver: bridge
+  internal:   # decoy <-> gateway only. No internet egress, no published ports.
+    internal: true
+  web:        # gateway + dashboard. Carries the published ports.
+  attack:     # attacker -> gateway only. Not internal, so ATTACKER_MODE=llm can reach the LLM API.
 
 services:
   decoy:
     build: ./decoy
-    networks:
-      - internal
-    # No published ports — only reachable from gateway on the internal network
+    networks: [internal]
     restart: unless-stopped
 
   gateway:
-    build: ./gateway
+    # Repo-root context so the image includes shared/ (contracts + events).
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
     ports:
-      - "8080:8080"   # HTTP proxy / maze
-      - "8090:8090"   # WebSocket event stream
-    env_file: .env
+      - "8080:8080"   # HTTP: proxy to decoy, or maze once flagged
+      - "8090:8090"   # WebSocket event stream for the dashboard
+    env_file:
+      - path: .env
+        required: false
     environment:
       DECOY_URL: http://decoy
-    depends_on:
-      - decoy
-    networks:
-      - internal
-      - public
+    depends_on: [decoy]
+    networks: [internal, web, attack]
     volumes:
       - ./replays:/replays
     restart: unless-stopped
 
   dashboard:
-    build: ./dashboard
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
     ports:
       - "5173:5173"
-    networks:
-      - public
+    networks: [web]
     restart: unless-stopped
 
   attacker:
-    build: ./attacker
-    profiles:
-      - attack
-    networks:
-      - public   # can only reach gateway:8080, not decoy directly
-    env_file: .env
+    build:
+      context: .
+      dockerfile: attacker/Dockerfile
+    profiles: [attack]   # only runs via: docker compose run --rm attacker
+    networks: [attack]   # can reach gateway, not decoy or dashboard
+    env_file:
+      - path: .env
+        required: false
     environment:
       TARGET_URL: http://gateway:8080
-    depends_on:
-      - gateway
+    depends_on: [gateway]
