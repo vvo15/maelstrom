@@ -1,0 +1,63 @@
+# Builds /dashboard and deploys it to GitHub Pages on every push to main.
+# One-time setup (repo admin): Settings → Pages → Source: "GitHub Actions".
+name: Deploy dashboard to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; let an in-progress deploy finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - run: npm ci
+
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      # Fails the build if a bundled replay is broken; keeps index.json in sync.
+      - run: npm run replays:index
+
+      - run: npm run build
+        env:
+          # Project Pages live at https://<owner>.github.io/<repo>/. The repo name is read
+          # from the event at build time, so renaming the repo can't break asset URLs.
+          # vite.config.ts normalizes the slashes. A custom domain would need BASE_PATH=/.
+          BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

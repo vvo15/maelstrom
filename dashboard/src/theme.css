@@ -1,0 +1,80 @@
+/*
+ * Maelstrom design tokens. Every color, font and size in the dashboard comes from
+ * these variables; component CSS must not hard-code colors.
+ *
+ * INTERIM VALUES: these are hand-picked, not yet exported from the Figma file.
+ * When the Figma tokens are ready, replace the values here and keep the names.
+ * Contrast (WCAG 2.2 AA) was checked for every text/background pair used:
+ * text >= 4.5:1, borders, focus ring and icons >= 3:1, in both schemes.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Type */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  /* Key numbers are read from the back of a room: never below 32px. */
+  --text-metric: clamp(2rem, 1.2rem + 2.6vw, 3.5rem);
+  --leading: 1.5;
+
+  /* Shape and spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --radius: 0.5rem;
+  --radius-pill: 999px;
+  --border-width: 2px;
+
+  /* Colors: light */
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #e9edf3;
+  --text: #121821;
+  --text-muted: #444f5e;
+  --border: #667184;
+  --border-subtle: #c5ced9;
+  --accent: #0a4fc4;
+  --on-accent: #ffffff;
+  --focus: #0a4fc4;
+  --danger: #a81d14;
+  --danger-bg: #fdecea;
+  --ok: #0f6a2c;
+  --ok-bg: #e6f4ea;
+  --warn: #8a4a00;
+  --warn-bg: #fff2dc;
+  --info: #0a4fc4;
+  --info-bg: #e7effd;
+  --highlight: #fff6bf;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --surface: #151b24;
+    --surface-2: #1f2835;
+    --text: #e9edf3;
+    --text-muted: #b2bccb;
+    --border: #8493a8;
+    --border-subtle: #2d3847;
+    --accent: #7fb0ff;
+    --on-accent: #0d1117;
+    --focus: #9cc2ff;
+    --danger: #ff9d95;
+    --danger-bg: #3a1614;
+    --ok: #72de93;
+    --ok-bg: #12301d;
+    --warn: #f6bb68;
+    --warn-bg: #38280d;
+    --info: #8ab6ff;
+    --info-bg: #14284a;
+    --highlight: #3a3510;
+  }
+}
