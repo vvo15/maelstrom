@@ -1,58 +1,84 @@
-// Gateway placeholder (Bait, compose skeleton). Brain replaces this with the real gateway.
-// Only job: pass every request through to the decoy with the contract's session header,
-// so the decoy can be tested end to end at localhost:8080. No detection, no maze, no events.
-import http from "node:http";
-import { createHash } from "node:crypto";
-import { SESSION_HEADER } from "../../shared/contracts";
+/**
+ * Siren Gateway process entry point (task 2.8).
+ *
+ * Wires the independently-built modules into a running process so the
+ * transparent proxy and the event stream run end to end BEFORE the detector
+ * exists:
+ *
+ *   config  -> readConfig()            (DECOY_URL / REPLAY_DIR, Req 2.5/2.6/9.9)
+ *   WS       -> startWsServer(8090)     (dashboard event stream, Req 9.5)
+ *   replay   -> new ReplayWriter(...)   (per-run JSONL log, Req 9.8/9.9)
+ *   emitter  -> configureEmitter(sink)  (so emit() can fan out to WS + replay)
+ *   HTTP     -> createGatewayServer()   (transparent proxy on 8080, Req 2.1)
+ *
+ * The session store is an in-memory singleton consumed inside `io/server.ts`
+ * (via `getOrCreateSession`), so there is nothing to wire for it here — booting
+ * the HTTP server is sufficient to make it live.
+ *
+ * NOTE (seam for task 9.1): this file is deliberately created WITHOUT any
+ * process-level `unhandledRejection` / `uncaughtException` handlers. Task 9.1
+ * EXTENDS this same file to register those handlers (log and keep the process
+ * running). Do not add them here — see the marked seam near the bottom.
+ */
+import { readConfig } from "./config";
+import { startWsServer } from "./io/wsServer";
+import { ReplayWriter } from "./io/replay";
+import { configureEmitter } from "./io/emitter";
+import { createGatewayServer } from "./io/server";
 
-const PORT = 8080;
-const DECOY_URL = process.env["DECOY_URL"] ?? "http://decoy";
+const HTTP_PORT = 8080;
+const WS_PORT = 8090;
 
-// Hop-by-hop or recomputed headers that must not be copied across the proxy.
-const SKIP_REQUEST = new Set([
-  "host", "connection", "keep-alive", "transfer-encoding", "upgrade",
-  "content-length", "expect", "te", "trailer", "proxy-connection", SESSION_HEADER,
-]);
-const SKIP_RESPONSE = new Set([
-  "connection", "keep-alive", "transfer-encoding", "content-length", "content-encoding",
-]);
+function main(): void {
+  // 1. Resolve configuration from the environment (pure read).
+  const config = readConfig();
 
-http
-  .createServer(async (req, res) => {
-    // Session id per shared/contracts.ts: first 16 hex of sha256(ip + "|" + userAgent).
-    const ip = req.socket.remoteAddress ?? "";
-    const ua = req.headers["user-agent"] ?? "";
-    const sessionId = createHash("sha256").update(`${ip}|${ua}`).digest("hex").slice(0, 16);
+  // 2. Fix a single start time; it names the replay file and anchors the run.
+  const startTime = Date.now();
 
-    const chunks: Buffer[] = [];
-    for await (const chunk of req) chunks.push(chunk as Buffer);
+  // 3. Start the WebSocket server that streams events to dashboards (Req 9.5).
+  const ws = startWsServer(WS_PORT);
 
-    const headers = new Headers();
-    for (const [name, value] of Object.entries(req.headers)) {
-      if (value === undefined || SKIP_REQUEST.has(name)) continue;
-      headers.set(name, Array.isArray(value) ? value.join(", ") : value);
-    }
-    headers.set(SESSION_HEADER, sessionId); // inbound copies were stripped above
+  // 4. Create the replay writer. The constructor creates the replay dir if
+  //    absent and targets `<replayDir>/<startTime>.jsonl` (Req 9.8, 9.9).
+  const replay = new ReplayWriter(config.replayDir, startTime);
 
-    try {
-      const method = req.method ?? "GET";
-      const upstream = await fetch(DECOY_URL + (req.url ?? "/"), {
-        method,
-        headers,
-        body: method === "GET" || method === "HEAD" ? undefined : Buffer.concat(chunks),
-        redirect: "manual",
-      });
-      const out: Record<string, string> = {};
-      upstream.headers.forEach((value, name) => {
-        if (!SKIP_RESPONSE.has(name)) out[name] = value;
-      });
-      res.writeHead(upstream.status, out);
-      res.end(Buffer.from(await upstream.arrayBuffer()));
-    } catch {
-      res.writeHead(502, { "content-type": "text/plain" });
-      res.end("decoy unreachable\n");
-    }
-  })
-  .listen(PORT, () => {
-    console.log(`gateway placeholder: proxying :${PORT} -> ${DECOY_URL}`);
+  // 5. Configure the emitter sink so `emit()` inside the request handler can
+  //    broadcast over WS, record into the replay ring buffer, and append to
+  //    the replay file. The WS functions are returned as standalone closures,
+  //    but we arrow-wrap them so correctness never depends on `this` binding.
+  configureEmitter({
+    broadcast: (ev) => ws.broadcast(ev),
+    recordForReplay: (ev) => ws.recordForReplay(ev),
+    append: (ev) => replay.append(ev),
   });
+
+  // 6. Create and start the HTTP server (transparent proxy, Req 2.1). The
+  //    factory does not call .listen(); binding the port is owned here.
+  const server = createGatewayServer({ decoyUrl: config.decoyUrl });
+  server.listen(HTTP_PORT, () => {
+    // 7. Announce both listeners so a boot check can confirm readiness.
+    // eslint-disable-next-line no-console
+    console.log(
+      `[gateway] HTTP proxy listening on :${HTTP_PORT} -> decoy ${config.decoyUrl}`,
+    );
+    // eslint-disable-next-line no-console
+    console.log(`[gateway] WebSocket event stream listening on :${WS_PORT}`);
+    // eslint-disable-next-line no-console
+    console.log(`[gateway] replay log: ${config.replayDir}/${startTime}.jsonl`);
+  });
+}
+
+main();
+
+// ---------------------------------------------------------------------------
+// SEAM — task 9.1 extends this file here.
+//
+// Task 9.1 will register process-level resilience handlers that log and keep
+// the process running:
+//
+//   process.on("unhandledRejection", (reason) => { ... });
+//   process.on("uncaughtException", (err) => { ... });
+//
+// They are intentionally NOT added in task 2.8. Leave this seam in place.
+// ---------------------------------------------------------------------------
