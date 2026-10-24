@@ -15,7 +15,7 @@ import { computeTotals, defaultSessionId } from "./sessions";
 import { LIVE_URL } from "./sources/live";
 import { useFeed } from "./useFeed";
 
-const REPO_URL: string = import.meta.env.VITE_REPO_URL ?? "https://github.com/vvo15/maestrom";
+const REPO_URL: string = import.meta.env.VITE_REPO_URL ?? "https://github.com/vvo15/maelstrom";
 const MODE_KEY = "maelstrom.viewMode";
 
 function readMode(): ViewMode {

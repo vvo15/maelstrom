@@ -195,7 +195,7 @@ npm run build               # tsc -b && vite build
 npm run replay:sample       # regenerate public/replays/sample-attack.jsonl from mock data
 npm run replays:curate -- ../replays/<startMs>.jsonl --name crew-flagged --title "Kiro Crew follows the bait"
 npm run replays:index       # make index.json match the .jsonl files on disk
-BASE_PATH=/maestrom/ npm run build   # build for the GitHub Pages sub-path (the repo name)
+BASE_PATH=/maelstrom/ npm run build   # build for the GitHub Pages sub-path (the repo name; CI derives it)
 ```
 
 ### Curating replays
@@ -304,7 +304,7 @@ passed (see "Session 4 additions"). Closes the "WebSocket message shape assumed"
 `SirenEvent` per message.
 
 **Rename (level 1):** user-visible name changed to Maelstrom: header, page title and
-description, replay banner link, repo URL fallback (`vvo15/maestrom`), the view-mode storage
+description, replay banner link, repo URL fallback (now `vvo15/maelstrom`, after the repo was renamed), the view-mode storage
 key (`maelstrom.viewMode`, which resets the Town IT setting once), and these docs. Shared
 names (`SirenEvent`, `SIREN_` canary prefix, `SIREN_LLM`, other lanes' files) are untouched,
 pending a team decision.
@@ -378,6 +378,24 @@ token pass first. Add real screenshots to `docs/kiro-log/img/` and link them in 
 replays into `public/replays/`, and confirm the hosted build runs with no backend. Decide
 whether to do the Figma token pass first.
 
+### 2026-10-24 — Session 6: merge, verify on main, final polish
+**Goal:** get every branch into `main`, prove the merged stack works, and finish the submission docs.
+**Done:**
+1. Merged `origin/main` into `stage/dashboard` (5 add/add conflicts, all in `dashboard/`, kept ours),
+   then PR #2, Labyrinth's PR #5 and the curated-replay PR #6 into `main`. Two integration bugs found
+   in a trial merge were fixed on Labyrinth's branch first: a missing named `maze` export and an
+   attacker Dockerfile that could not build from the repo-root Compose context.
+2. `dashboard/Dockerfile` now builds from the repo root and starts Vite directly (no tsc, no
+   `npm run build`). `docker compose build dashboard` passed and the image served HTTP 200.
+3. The Pages workflow derives `BASE_PATH` from `github.event.repository.name`. The repo was renamed to
+   `vvo15/maelstrom` the same day; the hosted site moved with it and its assets load from `/maelstrom/`.
+4. Curated a real recording (`scripted-mock.jsonl`: 1 session, flagged at request 5, $0.063, 5 predictions)
+   as the first replay. `sample-attack.jsonl` stays as the second entry.
+5. Re-checked `main` at `5ace482`: gateway `tsc` 0, gateway tests 47/47, maze property tests 18/18,
+   dashboard build and both `tsc` projects 0, lint 2 known warnings, scripted attacker flagged at
+   6201 ms with 0 gateway errors.
+**Known gaps:** `theme.css` is still hand-picked, not from Figma. No MCP servers are configured.
+Kiro Crew was not used on the hosted URL.
 <!-- Template for the next entry:
 
 ### YYYY-MM-DD — Session N: <short title>
