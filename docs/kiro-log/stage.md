@@ -39,7 +39,13 @@ Default autonomy: Auto. Surfaces used so far: Kiro IDE.
   10% (layout tuning, dead code, the real verification) was still hands-on. The big win was
   consistency: the plain-language copy and the accessibility rules were applied uniformly
   across every component because they were stated once as requirements/steering.
-- **Screenshot:** _TODO — add `img/stage-dashboard-live.png` and `img/stage-townit-view.png`._
+- **Screenshot:** none yet.
+  - SCREENSHOT NEEDED: `img/stage-dashboard-live.png`. Show the dashboard in technical view with
+    the flagged `auditor-llm-large` session selected. All panels should be visible: the top bar
+    numbers, the session list with the flagged badge, the timeline with decoy and maze rows, the
+    lit signals checklist, the flag alert and the attacker-mind panel.
+  - SCREENSHOT NEEDED: `img/stage-townit-view.png`. Show the same session and moment with the
+    Town IT view switched on, so the plain-language rewrite is visible.
 
 ## 2026-10-24 — Verified ATT&CK technique IDs against the live source
 
@@ -57,7 +63,10 @@ Default autonomy: Auto. Surfaces used so far: Kiro IDE.
 - **Compared to vibe coding:** this is precisely where unverified generation is dangerous — a
   wrong technique ID would look authoritative and mislead a judge. Checking the source cost a
   few minutes and removed that risk.
-- **Screenshot:** _TODO — add `img/stage-attack-chips.png`._
+- **Screenshot:** none yet.
+  - SCREENSHOT NEEDED: `img/stage-attack-chips.png`. Show the ATT&CK chips panel for the flagged
+    session with the technique IDs readable, next to the attack.mitre.org page for one of them
+    (for example T1552.001) so the check against the source is visible.
 
 ## 2026-10-24 — Saved progress: branch, commit, PR, and progress docs
 
@@ -75,7 +84,9 @@ Default autonomy: Auto. Surfaces used so far: Kiro IDE.
   `member-4` isn't merged.
 - **Compared to vibe coding:** the value here was discipline, not speed — staging specific
   paths and dry-running the add caught the ignore rules before anything wrong got committed.
-- **Screenshot:** _TODO — add `img/stage-pr.png`._
+- **Screenshot:** none yet.
+  - SCREENSHOT NEEDED: `img/stage-pr.png`. Show the PR #2 page on GitHub with the title,
+    `stage/dashboard` into `main`, and the merge box saying it has no conflicts.
 
 ## 2026-10-24 — Hosted demo (Prompt C), vibe session in the IDE
 
@@ -125,10 +136,74 @@ Default autonomy: Auto. Surfaces used so far: Kiro IDE.
   validator was already written for the dashboard, so the integration test reused it.
 - **Screenshot:** `img/stage-live-integration.png`.
 
+## 2026-10-24 — Pre-submission risk pass, vibe session in the IDE
+
+- **Feature used:** Kiro IDE (vibe chat, Autopilot) + Git/GitHub CLI + Docker + the Kiro docs
+  sub-agent.
+- **What I asked and why:** a numbered checklist of submission risks, with three rules: work
+  only in Stage's files, run every check and paste its real output, and stop at named gates
+  (secrets found, any push). A chat session fit because each step was small but had to be
+  proved, not assumed.
+- **What it fixed:**
+  - Merged `origin/main` into `stage/dashboard` (`518b56f`). All five conflicts were add/add in
+    `dashboard/` against Bait's kickoff placeholders, so I kept ours. `npm run replays:index`
+    left `index.json` unchanged, and `npm run build` and `tsc` passed. After the push, PR #2
+    went from `CONFLICTING` to `MERGEABLE`.
+  - The Pages workflow now builds with `BASE_PATH: /${{ github.event.repository.name }}/`
+    (`df5301c`). A `BASE_PATH=/maestrom/` build rewrote the asset URLs to `/maestrom/assets/...`.
+  - Rewrote `dashboard/Dockerfile` for the repo-root build context Compose uses (`377aa6c`). It
+    now copies from `dashboard/`, uses `node:24-alpine` to match CI, and runs
+    `npx vite --host 0.0.0.0 --port 5173` with no tsc step.
+  - Added `.kiro/steering/stage-docs-sync.md` (`9149895`), the on-demand `KIRO.md` sync.
+- **What the checks caught:**
+  - Plain `npx tsc --noEmit` in `dashboard/` checks nothing: `tsconfig.json` has `"files": []`
+    and only project references. Running it with `-p tsconfig.app.json` and
+    `-p tsconfig.node.json` gave the real result (both pass).
+  - The workflow wasn't hard-coded before. `configure-pages`' `base_path` already followed a
+    rename, so the change only swaps that for the event payload. The trade-off is that a custom
+    domain would now need `BASE_PATH=/`.
+  - `gh repo view` showed the repo was already renamed to `vvo15/maestrom` and already
+    **public**. The UI says "Maelstrom", so the product and repo names are spelled differently.
+  - Safety: `git check-ignore -v .kiro` and the tracked-`.env` check printed nothing. The
+    history grep printed 16 lines. All of them are test fixtures or detection patterns:
+    Labyrinth's property-test inputs (AWS's documented example key and strings built with
+    `.repeat()`), Bait's `safety-lint.sh` regexes, and spec and playbook prose. A stricter search
+    for full-length literal keys found none, and no history was rewritten.
+  - Docker: `docker compose build dashboard` failed with `npm ci` `EUSAGE` (no lockfile).
+    Compose uses the repo root as context, so the old `COPY package*.json ./` copied nothing.
+    After the fix the image builds, serves HTTP 200 and runs only Vite. `dashboard/.dockerignore`
+    has no effect with a repo-root context. The root `.dockerignore` is what keeps
+    `node_modules` out.
+  - The bundled replay judges see first (`sample-attack.jsonl`) is synthetic, generated from the
+    mock emitter. It has 2 sessions, 1 flagged (`auditor-llm-large`), a max burn of $0.283362
+    and 16 events with a prediction.
+  - Kiro 1.x hooks have no manual trigger. The docs agent quoted kiro.dev: for an on-demand IDE
+    workflow, use a manually included steering file, which runs as a `/<filename>` slash
+    command.
+- **What was blocked:**
+  - Product name and repo-link edits: the target name and repo were never filled in, so
+    nothing was renamed.
+  - `docker compose up -d dashboard` failed with `port is already allocated`. An older container
+    (`sleepy_bell`, image `siren-dashboard`) holds 5173. I didn't stop it; I verified the image
+    on port 5174 instead.
+  - Recording a scripted mock run: decoy and gateway start under Compose, but the attacker on
+    `main` is still Labyrinth's placeholder. It printed two lines, sent no requests and wrote no
+    replay. The maze on `main` is also a stub (`usd: 0`, no prediction). Labyrinth's real
+    attacker and maze are on `origin/member3-labrynth`, which `git merge-tree` says merges into
+    `main` cleanly.
+  - `/stage-docs-sync` was created but not run yet.
+- **Compared to vibe coding:** this was vibe coding with gates, and the gates did the work.
+  "Run every check" exposed a `tsc` that checked nothing and a wrong premise about the workflow.
+  The stop rule held the session at the secret scan until a human looked at the matches.
+- **Screenshot:** none yet.
+  - SCREENSHOT NEEDED: `img/stage-risk-pass.png`. Show the terminal with
+    `docker compose build dashboard` ending in `Image siren-hackachusetts--dashboard Built` and
+    the `curl` returning 200.
+
 ---
 
 ## Backlog for this log (keep filling as we go)
 - Figma MCP: what the design file gave Kiro that a screenshot wouldn't (when we do the token pass).
 - Kiro Crew walking the hosted URL like a first-time judge (after Pages is live).
-- Prompt D: the `stage-docs-sync` manual hook that compiles `KIRO.md`.
+- Prompt D: run `/stage-docs-sync` (a manual steering file, since IDE 1.x has no manual hooks) and log what it produced in `KIRO.md`.
 - Add real screenshots to `docs/kiro-log/img/` and link them above.
