@@ -304,7 +304,8 @@ function createHandler(
           method,
           path,
           body,
-          history: session.history,
+          // Snapshot: the server keeps pushing to session.history after this call.
+          history: session.history.slice(),
         };
         // The try/catch wraps ONLY this call (Req 11.2). `await` inside the
         // try catches both a rejected promise and a synchronous throw.

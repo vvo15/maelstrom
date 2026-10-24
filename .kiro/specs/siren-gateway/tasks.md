@@ -185,26 +185,26 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Attach a `.catch` to the fire-and-forget `predict` that logs and leaves `latestPrediction` unchanged; wrap `estimateBurn` in try/catch that logs and leaves both running totals unchanged
     - _Requirements: 11.3, 11.4_
 
-- [ ] 9. Final wiring and verification
-  - [~] 9.1 Extend `gateway/src/index.ts` (created in 2.8) with process-level handlers
+- [x] 9. Final wiring and verification
+  - [x] 9.1 Extend `gateway/src/index.ts` (created in 2.8) with process-level handlers
     - Register `process.on("unhandledRejection", ...)` and `process.on("uncaughtException", ...)` handlers that log and keep the process running
     - Run the full `tsc` build and `vitest --run` and confirm green
     - _Requirements: 2.1, 9.5, 11.5_
 
-  - [~] 9.2 Write required integration test: transparent proxy forwarding
+  - [x] 9.2 Write required integration test: transparent proxy forwarding
     - With a stub Decoy `http` server, assert the proxy forwards method/path/body, adds `x-siren-session`, and returns the Decoy's status/headers/body
     - _Requirements: 2.2, 2.3, 2.4_
 
-  - [~] 9.3 Write required integration test: routing decoy then maze (Property 3 end to end)
+  - [x] 9.3 Write required integration test: routing decoy then maze (Property 3 end to end)
     - With a stub Decoy and a stub `Maze`, assert benign and the first-flagging request go to the Decoy and subsequent flagged requests go to the Maze and return its `MazeResponse`
     - **Feature: siren-gateway, Property 3: Latched flag implies maze routing** (end-to-end emission of `flagged`/`route`)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 9.4 (Property 3)_
 
-  - [~] 9.4 Write required integration test: decoy failure returns 502 with exactly one event
+  - [x] 9.4 Write required integration test: decoy failure returns 502 with exactly one event
     - With a stub Decoy that errors or never responds (vitest fake timers for the 10s `AbortController`), assert a 502 response and exactly one emitted event with status 502
     - _Requirements: 11.1_
 
-  - [~] 9.5 Write required integration test: WebSocket last-500 backlog
+  - [x] 9.5 Write required integration test: WebSocket last-500 backlog
     - Connect a `ws` client and assert it receives the last-500 backlog on connection before live events, then assert a subsequent request's event is broadcast
     - _Requirements: 9.5, 9.6, 9.7_
 
@@ -212,12 +212,12 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Non-blocking predict timing (Req 8); replay file creation/naming `<start>.jsonl` with one parseable JSON line per event (Req 9.8, 9.9); `maze.generate` rejection -> 500 + `DECOY_HEADERS` + exactly one event (Req 11.2); predict/estimateBurn rejection leaves prediction/burn totals unchanged (Req 11.3, 11.4); unhandled-rejection resilience (Req 11.5); `DECOY_URL` default resolution (Req 2.5, 2.6)
     - _Requirements: 2.5, 2.6, 8.1, 8.2, 8.3, 8.4, 9.8, 9.9, 11.2, 11.3, 11.4, 11.5_
 
-  - [~] 9.7 Write required property test: replay round-trip
+  - [x] 9.7 Write required property test: replay round-trip
     - **Feature: siren-gateway, Property 7: Replay round-trip** — exercises `serializeEvent` / `parseEvent`
     - Arbitrary: a `SirenEvent` builder covering all required fields plus optional `model_claim`/`stated_goal`/`prediction` present-or-absent, unicode in `body_snippet`, and numeric edge values; assert `parseEvent(serializeEvent(ev))` deep-equals `ev` and each serialized line has no embedded newline; minimum 100 iterations
     - **Validates: Requirements 9.1, 9.8 (Property 7)**
 
-- [~] 10. Final checkpoint - full build and tests green
+- [x] 10. Final checkpoint - full build and tests green
   - Ensure the full `tsc` build passes and all tests pass with `vitest --run`, ask the user if questions arise.
 
 ## Notes

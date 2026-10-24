@@ -419,6 +419,16 @@
         "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792869948865
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872128901
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872211096
       }
     ],
     "6.5 Implement `/verify` agent/task capture in `io/server.ts`": [
@@ -545,6 +555,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458990
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871323585
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871450937
       }
     ],
     "9.2 Write required integration test: transparent proxy forwarding": [
@@ -552,6 +572,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866459024
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871450972
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871550969
       }
     ],
     "9.3 Write required integration test: routing decoy then maze (Property 3 end to end)": [
@@ -559,6 +589,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866459067
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871552189
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871633396
       }
     ],
     "9.4 Write required integration test: decoy failure returns 502 with exactly one event": [
@@ -566,6 +606,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866459126
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871633368
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871728611
       }
     ],
     "9.5 Write required integration test: WebSocket last-500 backlog": [
@@ -573,6 +623,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866459173
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871729216
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871868956
       }
     ],
     "9.7 Write required property test: replay round-trip": [
@@ -580,6 +640,21 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866459229
+      },
+      {
+        "executionId": "c20419bb-04a7-4930-b68d-eaf3d85b3337",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792871869016
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872069761
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872127952
       }
     ],
     "10. Final checkpoint - full build and tests green": [
@@ -587,6 +662,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866459297
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872210191
+      },
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872372838
       }
     ],
     "2.2 Write unit tests for `io/decoy.ts` header handling": [
@@ -639,6 +724,13 @@
         "executionId": "1f63abd5-337c-4d9e-9a77-7088a34df82f",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792870534654
+      }
+    ],
+    "9. Final wiring and verification": [
+      {
+        "executionId": "d8151c89-b162-43ae-8711-a17a69a7dbd3",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792872127987
       }
     ]
   }
