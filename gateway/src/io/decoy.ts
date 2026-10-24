@@ -19,10 +19,25 @@
  * are dropped (case-insensitively) before returning `headers`; Node sets
  * `content-length` from the bytes actually written.
  */
+import type * as http from "node:http";
 import { SESSION_HEADER } from "../../../shared/contracts";
 
 /** Milliseconds to wait for the Decoy before aborting (Req 11.1). */
 export const DECOY_TIMEOUT_MS = 10000;
+
+/** Request headers excluded from the Decoy-bound Fetch handoff (Req 2.2). */
+const EXCLUDED_REQUEST_HEADERS: ReadonlySet<string> = new Set([
+  "connection",
+  "keep-alive",
+  "transfer-encoding",
+  "upgrade",
+  "proxy-authorization",
+  "te",
+  "trailer",
+  "host",
+  "content-length",
+  SESSION_HEADER.toLowerCase(),
+]);
 
 /**
  * Response headers that must be dropped before forwarding to the client
@@ -48,6 +63,7 @@ export async function forwardToDecoy(
   method: string,
   path: string,
   body: string,
+  inboundHeaders: http.IncomingHttpHeaders,
   sessionId: string,
 ): Promise<DecoyResult> {
   const target = decoyUrl + path;
@@ -55,9 +71,21 @@ export async function forwardToDecoy(
   const timer = setTimeout(() => controller.abort(), DECOY_TIMEOUT_MS);
 
   try {
-    const headers: Record<string, string> = {
-      [SESSION_HEADER]: sessionId, // Req 2.3
-    };
+    const headers = new Headers();
+    for (const [name, value] of Object.entries(inboundHeaders)) {
+      if (value === undefined || EXCLUDED_REQUEST_HEADERS.has(name.toLowerCase())) {
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        for (const member of value) {
+          headers.append(name, member);
+        }
+      } else {
+        headers.set(name, value);
+      }
+    }
+    headers.set(SESSION_HEADER, sessionId); // Req 2.3: authoritative value is set last
 
     // fetch rejects a body on GET/HEAD requests, so only attach one otherwise.
     const upperMethod = method.toUpperCase();

@@ -183,23 +183,33 @@ export function getSession(sessionId: string): SessionState | undefined;
 `io/decoy.ts` (Requirement 2, 11.1)
 
 ```ts
+import type * as http from "node:http";
+
 export type DecoyResult = {
   status: number;
-  headers: Record<string, string>; // body-transforming/hop-by-hop headers already dropped
+  headers: Record<string, string>; // response filtering already applied
   bodyBytes: Buffer;               // raw response bytes, forwarded to the client unchanged
   body: string;                    // UTF-8 decode of bodyBytes, ONLY for body_snippet + estimateBurn
 };
 // Forwards via built-in fetch with an AbortController 10s timeout.
-// Adds SESSION_HEADER = sessionId (Req 2.3). Throws on connection error / abort (Req 11.1).
+// `inboundHeaders` is the de-forged snapshot captured by server.ts after it
+// deletes the client-supplied Session_Header. Defined request headers are copied
+// with their Node-observed values except for this exact case-insensitive request
+// exclusion set:
+//   connection, keep-alive, transfer-encoding, upgrade, proxy-authorization,
+//   te, trailer, host, content-length, x-siren-session.
+// Array-valued headers are appended member-by-member. After that projection,
+// SESSION_HEADER = sessionId is set once as the authoritative value (Req 2.3).
+// Throws on connection error / abort (Req 11.1).
 //
 // Body is read as BYTES: `Buffer.from(await res.arrayBuffer())` -> bodyBytes.
 // Those raw bytes are what the client receives, byte-for-byte. A UTF-8 string
 // copy (`body`) is derived ONLY for the body_snippet (first 500 chars) and for
 // maze.estimateBurn — never for forwarding.
 //
-// fetch transparently decompresses the response, so the following response
-// headers MUST be dropped before returning `headers` to the client (they
-// describe the original encoded/framed body, not the bytes we now hold):
+// Response filtering is a separate boundary. Because fetch transparently
+// decompresses the response, these response headers are dropped before the
+// DecoyResult reaches the client:
 //   content-encoding, content-length, transfer-encoding, connection.
 // Node sets content-length from the actual bytes written.
 export async function forwardToDecoy(
@@ -207,7 +217,8 @@ export async function forwardToDecoy(
   method: string,
   path: string,
   body: string,
-  sessionId: string
+  inboundHeaders: http.IncomingHttpHeaders,
+  sessionId: string,
 ): Promise<DecoyResult>;
 ```
 
@@ -277,46 +288,46 @@ sequenceDiagram
   participant RP as replay
 
   C->>S: HTTP request (:8080)
-  S->>S: strip inbound x-siren-session (Req 1.2)
-  S->>S: read full body
+  S->>S: delete inbound x-siren-session (Req 1.2)
+  S->>S: snapshot de-forged inboundHeaders; capture ts/method/url/path/sourceIp/userAgent/headerValues
   S->>D: deriveSessionId(sourceIp, userAgent) (Req 1.1)
   S->>ST: getOrCreateSession(session_id)
-  S->>S: capture flaggedBeforeScoring = session.flagged (Req 2.2/6.1)
-  alt path startsWith /verify
+  S->>S: read full body
+  S->>D: updateSession(state, history, RequestMeta) -> signals/score/flag/route from pre-scoring flag
+  S->>ST: store updated signals, ai_score, and flagged state
+  opt path == /verify
     S->>ST: set model_claim=?agent, stated_goal=?task (Req 3)
   end
-  S->>D: detectSignals(history, current) (Req 4)
-  S->>ST: union new signals into session.signals (Req 4.6)
-  S->>D: scoreSignals(session.signals) -> ai_score = min(100, sum) (Req 5.2)
-  S->>D: latchFlag(prev, ai_score) -> session.flagged (Req 5.3/5.4)
-  S->>D: route = decideRoute(flaggedBeforeScoring) (Req 2.2/6.4)
   alt route == decoy
-    S->>DC: forwardToDecoy(...) + x-siren-session (Req 2.3)
-    DC-->>S: status/headers/body  (or error/timeout -> 502, Req 11.1)
+    S->>DC: forwardToDecoy(..., inboundHeaders, sessionId)
+    Note over DC: exclude exact request set, then set authoritative x-siren-session
+    DC-->>S: status/filtered response headers/body (or error/timeout -> 502, Req 11.1)
   else route == maze
     S->>MZ: maze.generate(MazeRequest{session_id,method,path,body,history}) (Req 6.1/6.2)
     MZ-->>S: MazeResponse (or throw/reject -> 500 + DECOY_HEADERS, Req 11.2)
   end
   S->>MZ: estimateBurn(responseBody, model_claim) (Req 7.1)
-  S->>D: applyBurn totals, clamping neg/NaN/Inf -> 0 (Req 7.2-7.4, 11.4)
-  opt flagged AND requestCount % 5 == 0
-    S-)MZ: predict(history) fire-and-forget (Req 8.1/8.2)
-    MZ--)ST: on resolve store latest prediction (Req 8.3; on reject keep prev, Req 11.3)
-  end
-  S->>EM: buildSirenEvent(ts=now, body_snippet=first 500 of decoded body, route=actual, flagged=post-scoring) (Req 9.1-9.4)
-  S->>C: response (status, de-headered headers, raw bodyBytes)
+  S->>D: applyBurn totals, clamping neg/NaN/Inf -> 0 (Req 7.2-7.5, 11.4)
+  S->>EM: build and emit SirenEvent (Req 9.1-9.4)
   EM->>WS: broadcast + recordForReplay (Req 9.6/9.7)
   EM->>RP: append JSONL (Req 9.8)
+  S->>ST: append emitted event to history; increment requestCount
+  opt flagged AND requestCount % 5 == 0
+    S-)MZ: predict(history) fire-and-forget (Req 8.1/8.2)
+    MZ--)ST: on resolve store latest prediction (Req 8.3; on reject keep previous, Req 11.3)
+  end
+  S->>C: write existing outcome status/headers/body bytes
 ```
 
 Key ordering guarantees:
 
-- **De-header before anything** (Req 1.2): the inbound `x-siren-session` is removed before signal detection reads header values, so a client cannot inject a session or forge a canary match through that header.
-- **Pre-scoring flag drives routing** (Req 2.2, 6.4): `flaggedBeforeScoring` is captured before `detectSignals`/`scoreSignals` run. The request that first crosses the threshold still routes to the Decoy; its emitted `flagged` field is nonetheless the post-scoring `true` (Req 9.4, Property 3.2).
+- **De-forge, then snapshot before asynchronous work** (Req 1.2): `server.ts` deletes inbound `x-siren-session` as its first request-processing operation, then shallow-copies `req.headers` (including copied array values) before entering the asynchronous handler. It captures request metadata and header values from the de-forged request, derives/gets the session, and only then reads the body. The snapshot flows only into the Decoy branch; Maze requests remain unchanged.
+- **Pre-scoring flag drives routing** (Req 2.2, 6.4): `updateSession` receives the prior `session.flagged`, computes signals/score/latching, and returns the route selected from that pre-scoring value. The request that first crosses the threshold still routes to the Decoy; its emitted `flagged` field is nonetheless the post-scoring `true` (Req 9.4, Property 3.2).
+- **`/verify` capture follows the session update** (Req 3): agent/task fields are stored after `updateSession` and before Decoy/Maze routing, burn accounting, and event construction, so the current event and burn estimate can carry the new claim.
 - **Enumeration excludes the current request** (Req 4.4): `detectSignals` computes the 403/404 ratio over previously-completed requests in the 60s window only, because the current request's status is not known at signal-computation time.
-- **Byte-accurate decoy forwarding** (Req 2): the decoy response body is read as bytes (`arrayBuffer` -> `Buffer`) and written to the client unchanged. A UTF-8 decoded string copy is used only for `body_snippet` (first 500 chars) and `maze.estimateBurn`, never for forwarding. The body-transforming / hop-by-hop response headers `content-encoding`, `content-length`, `transfer-encoding`, and `connection` are dropped before responding (fetch has already decompressed the body); Node emits `content-length` from the bytes actually written.
+- **Request and response filtering are separate boundaries** (Req 2): before the Decoy fetch, the Gateway removes exactly `connection`, `keep-alive`, `transfer-encoding`, `upgrade`, `proxy-authorization`, `te`, `trailer`, `host`, `content-length`, and `x-siren-session` from the de-forged request snapshot, then sets the computed `x-siren-session`. After Fetch reads and transparently decompresses the Decoy response, it separately drops response headers `content-encoding`, `content-length`, `transfer-encoding`, and `connection`. The raw response bytes are written to the client unchanged, and Node emits `content-length` from those bytes.
 - **`route` field is where it actually went** (Req 9.4): on a decoy timeout the event still has `route = "decoy"` with `status = 502`; a maze failure yields `status = 500` with `route = "maze"` and `DECOY_HEADERS`.
-- **Exactly one event per request** (Req 9.1, 11.1, 11.2): the event is built and emitted on every terminal path, including error paths, from a single emission point in `server.ts`.
+- **Exactly one event per request** (Req 9.1, 11.1, 11.2): every terminal Decoy/Maze outcome reaches one build-and-emit point. Only after that attempt does `server.ts` update history/request count, optionally schedule non-blocking prediction, and finally write the response, matching the implemented lifecycle.
 
 ## Data Models
 
@@ -456,7 +467,7 @@ A **stub Decoy** (a throwaway `http` server) and a **stub Maze** implementing th
 
 **Required integration tests** (these four are the blocking set):
 
-1. **Transparent proxy forwarding** — the proxy forwards method/path/body, adds `x-siren-session`, and returns the Decoy's status/headers/body (Req 2.2–2.4).
+1. **Transparent proxy forwarding** — one real POST proves the proxy preserves the Node-observed `user-agent`, `content-type`, `authorization`, and `cookie` values; replaces a forged inbound `x-siren-session` with the Gateway-derived session ID; and retains the existing assertions for method, path plus query, request body bytes, Decoy response status/headers/raw body bytes, route, session ID, flagged state, and exactly one emitted event (Req 1.2, 2.2–2.4).
 2. **Routing to decoy then maze (Property 3 end to end)** — benign and first-flagging requests go to the stub Decoy; subsequent flagged requests go to the stub Maze and return its `MazeResponse` (Req 6.1–6.4).
 3. **Decoy failure returns 502 with exactly one event** — stub Decoy that errors or never responds → 502 + exactly one emitted event with status 502, using vitest fake timers for the 10s `AbortController` (Req 11.1).
 4. **WebSocket backlog (last-500 on connect)** — connect a `ws` client and assert it receives the last-500 backlog on connection before live events, then assert a subsequent request's event is broadcast (Req 9.5–9.7).

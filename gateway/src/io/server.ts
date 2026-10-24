@@ -207,11 +207,21 @@ function createHandler(
   config: GatewayServerConfig,
 ): http.RequestListener {
   return (req, res) => {
-    // Arrival time, used by the time-window signals (Req 4.3, 4.4).
-    const ts = Date.now();
-
     // Step 1: strip the inbound session header before anything else (Req 1.2).
     delete req.headers[SESSION_HEADER];
+
+    // Snapshot the de-forged headers before entering the asynchronous handler.
+    // Copy array values so later mutation cannot change the Decoy-bound view;
+    // scalar strings and undefined values are preserved as Node observed them.
+    const inboundHeaders: http.IncomingHttpHeaders = Object.fromEntries(
+      Object.entries(req.headers).map(([name, value]) => [
+        name,
+        Array.isArray(value) ? [...value] : value,
+      ]),
+    );
+
+    // Arrival time, used by the time-window signals (Req 4.3, 4.4).
+    const ts = Date.now();
 
     // Capture request shape now; the socket address is read before the body
     // is consumed to avoid any dependency on stream state.
@@ -274,6 +284,7 @@ function createHandler(
             method,
             url,
             body,
+            inboundHeaders,
             sessionId,
           );
           outcome = {

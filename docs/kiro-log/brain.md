@@ -40,3 +40,9 @@
 - docker compose (real PHP decoy + gateway): scripted sequence with the python-httpx user agent.
 - Result: 4 requests to the decoy at score 10; /verify flagged at score 70 but still served by the decoy; /staff/portal and /admin routed to the maze.
 - The routing rule fixed during requirements review (route on the pre-scoring flag) is exactly what makes the /verify bait page reachable in the real system.
+
+## Bugfix spec: decoy request headers
+- Feature used: Bug Fix spec (separate bugfix.md record, design, tasks)
+- Found during Integration 2: the decoy's Apache logs showed every request with user agent "node". The gateway forwarded only method, path and body, so Content-Type (form POSTs), Authorization and Cookie never reached the decoy.
+- Root cause traced to our own spec: Requirement 2.2 listed only method, path and body, and our steering line "the decoy gets only the x-siren-session header added" reinforced it. The bugfix spec updated the requirement, the steering, the code, and added a regression test.
+- Compared to a chat fix: the spec traced the bug to the requirement and steering that caused it, so it can't come back on the next Kiro run.
