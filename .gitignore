@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+node_modules/
+.env
+dist/
+replays/*.jsonl
