@@ -124,6 +124,11 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Arbitrary: a sequence engineered to cross the threshold (e.g. a `bait_followed`-triggering request); assert the first-flagging request yields `route = "decoy", flagged = true` and every later request yields `route = "maze", flagged = true`; minimum 100 iterations
     - **Validates: Requirements 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 9.4 (Property 3)**
 
+  - [x] 4.12 Write example test for the scripted attacker sequence
+    - In `gateway/src/detector/scriptedAttacker.test.ts`, replay with user agent `python-httpx/0.27.0`: GET `/`, `/robots.txt`, `/.env`, `/backup/README_ADMIN.txt`, then `/verify?agent=scripted-agent&task=assess+town+portal`, then a 6th request
+    - Assert requests 1-4 route to decoy unflagged, the session is flagged after request 5, request 5 routes to `decoy`, and request 6 routes to `maze`
+    - _Requirements: 4.1, 4.5, 5.3, 5.4, 6.1, 6.2_
+
 - [x] 5. Checkpoint - detector unit + property tests pass
   - Ensure all tests pass with `vitest --run`, ask the user if questions arise.
 
@@ -133,15 +138,15 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Verify with `tsc --noEmit`
     - _Requirements: 6.5, 6.6_
 
-  - [~] 6.2 Implement `detector/burn.ts`
-    - Implement `clampBurnValue(raw)` mapping negative/NaN/Infinity to 0 and otherwise the value, and pure `applyBurn(total, raw)` = `total + clampBurnValue(raw)`
+  - [x] 6.2 Implement `detector/burn.ts`
+    - Implement `clampBurnValue(raw)` mapping negative/NaN/Infinity to 0 and otherwise the value, and pure `applyBurn(total, raw)` = `min(Number.MAX_VALUE, total + clampBurnValue(raw))` (saturating add)
     - Verify with `tsc --noEmit`
-    - _Requirements: 7.2, 7.3, 7.4_
+    - _Requirements: 7.2, 7.3, 7.4, 7.5_
 
-  - [~] 6.3 Write property test for non-decreasing burn totals
+  - [x] 6.3 Write property test for non-decreasing burn totals
     - **Feature: siren-gateway, Property 6: Non-decreasing burn totals** — exercises `applyBurn` / `clampBurnValue`
     - Arbitrary: arrays of raw values from `fc.oneof` over normal doubles, negatives, and pathological `NaN`/`Infinity`/`-Infinity`; fold through `applyBurn` and assert each running total is `>=` the previous and stays finite; minimum 100 iterations
-    - **Validates: Requirements 7.2, 7.3, 7.4 (Property 6)**
+    - **Validates: Requirements 7.2, 7.3, 7.4, 7.5 (Property 6)**
 
   - [~] 6.4 Wire detection, scoring, flag latching, and routing into `io/server.ts`
     - Capture `flaggedBeforeScoring` from session state before scoring; run `detectSignals`, union new signals into `session.signals`, set `ai_score = scoreSignals(...)`, latch `flagged`, and compute `route = decideRoute(flaggedBeforeScoring)`
@@ -168,7 +173,7 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
   - Ensure `tsc` build passes and all tests pass with `vitest --run`, ask the user if questions arise.
 
 - [ ] 8. Error handling and resilience
-  - [~] 8.1 Handle decoy failure and timeout in `io/server.ts`
+  - [x] 8.1 Handle decoy failure and timeout in `io/server.ts`
     - Catch connection errors and 10s aborts from `forwardToDecoy`; return status 502 to the client and emit exactly one `SirenEvent` with `status = 502` and `route = "decoy"`
     - _Requirements: 11.1_
 

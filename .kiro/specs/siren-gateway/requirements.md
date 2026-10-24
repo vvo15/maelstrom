@@ -116,6 +116,7 @@ The build ordering intent is encoded in requirement priority: the transparent HT
 2. WHEN `maze.estimateBurn` returns a token count and a dollar amount, THE Gateway SHALL add the returned token count to the Session's `est_tokens_burned` running total and the returned dollar amount to the Session's `est_usd_burned` running total.
 3. IF `maze.estimateBurn` returns a token count that is negative, NaN, or Infinity, THEN THE Gateway SHALL add 0 to the Session's `est_tokens_burned` running total instead of the returned token count, so that `est_tokens_burned` is always non-decreasing regardless of the maze implementation.
 4. IF `maze.estimateBurn` returns a dollar amount that is negative, NaN, or Infinity, THEN THE Gateway SHALL add 0 to the Session's `est_usd_burned` running total instead of the returned dollar amount, so that `est_usd_burned` is always non-decreasing regardless of the maze implementation.
+5. IF adding a clamped burn value would make `est_tokens_burned` or `est_usd_burned` exceed `Number.MAX_VALUE`, THEN THE Gateway SHALL set that total to `Number.MAX_VALUE`, so that both running totals stay finite and non-decreasing.
 
 ### Requirement 8: Non-blocking prediction enrichment
 

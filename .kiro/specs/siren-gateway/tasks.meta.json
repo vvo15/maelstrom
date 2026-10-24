@@ -355,6 +355,26 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458617
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868353835
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868408658
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868626303
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868724991
       }
     ],
     "6.3 Write property test for non-decreasing burn totals": [
@@ -362,6 +382,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458652
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868408618
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868726423
       }
     ],
     "6.4 Wire detection, scoring, flag latching, and routing into `io/server.ts`": [
@@ -404,6 +434,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458887
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868739898
+      },
+      {
+        "executionId": "9483c8a5-5a09-44f3-8590-8b00d5448f14",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868898584
       }
     ],
     "8.2 Handle `maze.generate` failure in `io/server.ts`": [
@@ -493,6 +533,18 @@
         "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792867981886
+      }
+    ],
+    "4.12 Write example test for the scripted attacker sequence": [
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868295130
+      },
+      {
+        "executionId": "cc2224f3-58c6-4fc0-89bf-18d81fb83b9d",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868353176
       }
     ]
   }

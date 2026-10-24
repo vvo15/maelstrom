@@ -162,7 +162,8 @@ export function decideRoute(flaggedBeforeScoring: boolean): RouteDecision;
 // Req 7.3, 7.4, Property 6. Negative, NaN, or Infinity -> 0; otherwise the value.
 export function clampBurnValue(raw: number): number;
 
-// Fold helper: newTotal = total + clampBurnValue(raw). Pure.
+// Fold helper, saturating add: newTotal = min(Number.MAX_VALUE, total + clampBurnValue(raw)),
+// so the total never overflows to Infinity (Req 7.5). Pure.
 export function applyBurn(total: number, raw: number): number;
 ```
 
@@ -402,7 +403,7 @@ For all session ids and `CanaryKind` values, when the string produced by `canary
 
 For all sequences of `estimateBurn` return values — including negative, NaN, and Infinity — folding through `applyBurn` yields running `est_tokens_burned` and `est_usd_burned` totals that never decrease and never become NaN or Infinity.
 
-**Validates: Requirements 7.2, 7.3, 7.4**
+**Validates: Requirements 7.2, 7.3, 7.4, 7.5**
 
 ### Property 7: Replay round-trip
 

@@ -14,3 +14,9 @@
 - The requirements encoded build order (proxy + WebSocket stream first), so Kiro's tasks built them with the detector stubbed to "no signals". The dashboard could integrate before any detection logic existed.
 - Kiro's checkpoint report was honest about coverage: "green" covered only the decoy header unit tests, and the end-to-end path was verified by hand, with automated tests scheduled for tasks 9.2-9.5.
 - Compared to vibe coding: we'd likely have built the detector first because it's the interesting part, and Stage would have waited hours to connect.
+
+## Property-based testing caught an overflow bug
+- Feature used: PBT with fast-check (Property 6: burn totals never decrease and stay finite)
+- Property 6 failed in 3 of 7 runs. Shrunk counterexample: [1.0977e+293, 1.7977e+308]. Both values are finite and non-negative, so the clamp passed them through, but their sum overflowed past Number.MAX_VALUE and the total became Infinity.
+- A unit test with realistic numbers would never have hit this. Fix: saturate the total at Number.MAX_VALUE, and add Requirement 7.5 so the spec covers overflow.
+- Also: Kiro's task runner refused untracked work, so the scripted-attacker test was added to the spec as task 4.12 instead of being slipped in. The spec stayed the single source of truth.
