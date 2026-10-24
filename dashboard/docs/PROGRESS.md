@@ -8,6 +8,10 @@ step by step, what has been built and what comes next.
 > dated entry each session, newest at the top, and never rewrite old entries. The
 > sections above it (status, architecture, decisions) describe the *current* state and
 > should be edited in place to stay accurate.
+>
+> **Related:** the Kiro-feature write-up for this lane lives in `docs/kiro-log/stage.md`
+> (feeds `KIRO.md`). This file is the technical/engineering log; that one is the
+> Kiro-usage log.
 
 ---
 
@@ -92,6 +96,70 @@ and status is never conveyed by color alone (always text + icon).
 
 ---
 
+## How it works (detailed)
+
+### Data flow
+```
+source (mock | live | replay)
+  → SirenEvent objects
+    → dedupe sink in useFeed.ts (drops repeats, batches ~50ms)
+      → sessionsReducer folds each event into a SessionView
+        → App derives the selected session + totals
+          → panels render (technical or plain copy)
+```
+
+### The event pipeline
+- **`useFeed.ts`** owns source selection and lifecycle. It wires up exactly one active
+  source at a time, and on any source change it dispatches a `reset` so the view starts
+  clean. Its **dedupe sink** keys events on `session_id|ts|method|path` — this matters
+  because the live gateway resends its last 500 events to every new client on connect, so
+  without dedupe a reconnect would double every row. Events are flushed to the reducer in
+  ~50ms batches to avoid a render per event.
+- **Startup policy:** on first load it tries Live, and only the *first* attempt is allowed
+  to auto-fall-back to the first bundled replay after a 2s timeout. Once the user manually
+  picks a source, auto-fallback is disabled so we never yank them off their choice.
+- **`sessions.ts`** is a pure reducer. For each event it updates the running `SessionView`:
+  request count, score, flagged state (sticky — once flagged, stays flagged), first/last
+  timestamps, the model claim/goal, the ordered list of signals with the request number
+  each first appeared, running USD/token burn (taken as a max so it never ticks backward),
+  the latest prediction, and the accumulated ATT&CK technique hits. It caps stored events
+  per session and total sessions to stay bounded on long live runs. `computeTotals` derives
+  the top-bar numbers (newest flagged session's time-to-detect, summed USD, flagged count).
+
+### Sources
+- **`sources/mock.ts`** — deterministic for a given base timestamp (seeded PRNG for response
+  sizes). Two sessions: a resident browsing permits/311 (never flagged) and a scripted AI
+  attacker (`python-httpx` UA) that trips `scripted_ua`, follows the `/verify` bait on
+  request 5 to get flagged, is then served by the maze, reuses the planted admin canary, and
+  emits a fresh prediction roughly every 5 requests. Scoring mirrors the playbook's detector
+  weights only so the mock reads consistently — the real detector lives in the gateway.
+- **`sources/live.ts`** — WebSocket client with auto-reconnect (3s), tolerant of a single
+  object or an array per frame, and defensive against malformed frames (ignores them, keeps
+  the stream alive). Guards against `new WebSocket` throwing (e.g. mixed-content on https).
+- **`sources/player.ts`** — plays an event list in timestamp order, spacing rows by their
+  original gaps divided by the speed (1x/2x/4x), with long idle gaps clamped so a recording
+  never visibly stalls. Supports pause/resume/restart and reports progress.
+- **`sources/replays.ts`** — loads `public/replays/index.json` (array or `{replays:[]}`,
+  items may be strings or `{file,title}`), restricts to plain `*.jsonl` filenames, and
+  fetches recordings relative to the configured base path. Returns `[]`/`undefined` on any
+  problem so the app falls back instead of erroring.
+- **`sources/validate.ts`** — runtime `SirenEvent` type guard (used for live frames and
+  dropped files) plus a `.jsonl` parser that counts bad lines instead of throwing.
+
+### UI and accessibility specifics
+- **`copy.ts`** holds two complete copy sets keyed by view mode (`technical`, `plain`). The
+  Town IT toggle swaps the whole set, including a plain-English `describe()` for each request
+  and plain outcome/route labels. Mode is remembered in `localStorage`.
+- **Flag alert** uses `aria-live="assertive"` and stays mounted so the announcement fires the
+  moment a session flips to flagged. **Timeline** list uses `aria-live="polite"` with
+  `aria-relevant="additions"`.
+- **No color-only status:** every status/route pill and every signal/badge pairs a shape icon
+  (`Icon.tsx`) with text. Selected session also shows a text/arrow marker, not just a tint.
+- **`theme.css`** is the single source of color/type/spacing tokens, with a dark-scheme block.
+  No component hard-codes a color (verified by grep — only the unused Vite template SVGs match).
+
+---
+
 ## MITRE ATT&CK mapping
 
 All IDs and names were confirmed on attack.mitre.org on **2026-10-24**.
@@ -126,6 +194,32 @@ Environment overrides:
 
 ---
 
+## Verification done so far (2026-10-24)
+
+What was actually run, and the result — so we don't re-litigate "does it work".
+
+| Check | How | Result |
+| --- | --- | --- |
+| Type check | `tsc -b` | Passes |
+| Production build | `vite build` | Passes (~258 kB JS / ~82 kB gzip) |
+| Pages sub-path build | `BASE_PATH=/siren-Hackachusetts-/ vite build` | Asset + favicon paths rewritten to the sub-path |
+| Lint | `oxlint` | 2 `set-state-in-effect` warnings in `useFeed.ts`, no errors |
+| WCAG AA contrast | Node script over every `theme.css` token pair, light + dark | 0 failures (text ≥ 4.5:1, UI/borders/focus ≥ 3:1) |
+| No hard-coded colors | grep across `src` | None outside `theme.css` (only Vite template SVGs match) |
+| Live connect + dedupe | Headless Chrome vs. a throwaway WS gateway that resends frames | Connects; duplicates dropped (25 attacker rows, not 30) |
+| Replay fallback | Headless Chrome with no gateway | Falls back to bundled replay after 2s; shows notice + banner |
+| Flag alert | Headless Chrome, attacker session | Shows `auditor-llm-large` / "assess town portal"; time-to-detect 3.7s at request 5; $0.28 burned |
+| Signals + attacker mind | Headless Chrome | All five signals light up; prediction panel fills in |
+| Town IT view | Headless Chrome, toggle on | Alert/timeline/signals/chips all rewritten to plain language |
+| Keyboard order | Headless Chrome, simulated Tab | Skip link → toggle → source radios → sessions → timeline → chips |
+| Mobile width | Headless Chrome at 390px | No horizontal overflow |
+| Both color schemes | Headless Chrome emulated media | Render correctly in light and dark |
+
+**Not yet verified:** a run against the real gateway (only a fake WS server was used), and a
+containerized Docker build (expected to fail on the `../../shared` type import — see gaps).
+
+---
+
 ## Open decisions & known gaps
 
 - **`theme.css` is not from Figma yet.** Values are hand-picked; names match the intended
@@ -147,6 +241,21 @@ Environment overrides:
 ## Session Log
 
 Newest entries first. Append a new entry at the end of each work session.
+
+### 2026-10-24 — Session 2: Progress docs + Kiro log
+
+**Goal:** Document everything built so far and set up docs we keep current each session.
+
+**Done:**
+1. Created this progress log (`dashboard/docs/PROGRESS.md`): status table, "what it does",
+   file map, a detailed "how it works" section, the ATT&CK table, build/run commands, a
+   verification-results table, known gaps, and this append-only session log.
+2. Created the Stage Kiro log (`docs/kiro-log/stage.md`) in the playbook format, backfilled
+   with entries for the dashboard build, the ATT&CK verification, and the commit/PR work.
+3. Committed and pushed to `stage/dashboard` (PR #2).
+
+**Next session:** Prompt C — hosted demo (Pages workflow + curated replays), or the Figma
+token pass first. Add real screenshots to `docs/kiro-log/img/` and link them in the Kiro log.
 
 ### 2026-10-24 — Session 1: Build the dashboard, commit, open PR
 
