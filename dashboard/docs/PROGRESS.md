@@ -29,13 +29,14 @@ step by step, what has been built and what comes next.
 | GitHub Pages base path | ✅ Configurable via `BASE_PATH` |
 | Committed + PR | ✅ Branch `stage/dashboard`, PR #2 |
 | Figma design tokens | ⬜ Not done — `theme.css` values are hand-picked placeholders |
-| Prompt C — hosted demo + Pages workflow | ⬜ Not started (next up) |
+| Prompt C — hosted demo + Pages workflow | 🟨 Workflow, curation script and banner done; live once PR #2 merges and Pages is enabled |
+| Real gateway replays | ⬜ None recorded yet; only the synthetic sample is bundled |
 | Prompt D — docs-sync hook | ⬜ Not started |
 | README / KIRO.md / demo script | ⬜ Not started |
 
-**Next step:** Prompt C — add `.github/workflows/pages.yml`, curate real replays into
-`public/replays/`, and ship the hosted demo. (Needs the OK to write outside `/dashboard`
-for the workflow file.)
+**Next step:** a repo admin sets Settings → Pages → Source to "GitHub Actions", then merge
+PR #2. Once Brain/Labyrinth produce a real run, curate it with `npm run replays:curate`.
+Then have Kiro Crew walk the hosted URL like a first-time judge.
 
 ---
 
@@ -184,8 +185,27 @@ npm install
 npm run dev                 # local dev server
 npm run build               # tsc -b && vite build
 npm run replay:sample       # regenerate public/replays/sample-attack.jsonl from mock data
+npm run replays:curate -- ../replays/<startMs>.jsonl --name crew-flagged --title "Kiro Crew follows the bait"
+npm run replays:index       # make index.json match the .jsonl files on disk
 BASE_PATH=/siren-Hackachusetts-/ npm run build   # build for GitHub Pages sub-path
 ```
+
+### Curating replays
+The gateway writes one recording per run to `replays/<startMs>.jsonl` at the repo root
+(git-ignored). `replays:curate` copies one into `public/replays/`, keeps only valid
+`SirenEvent` lines (bad lines are reported and dropped), sorts by `ts`, and rebuilds
+`index.json`. The curated file goes first in the index, so it becomes the replay the hosted
+demo falls back to. Existing titles and order are kept. A file without `--title` gets an
+auto title such as "Recorded run (Oct 24): auditor-llm-large flagged after 5 requests".
+`replay:sample` no longer overwrites curated entries.
+
+### Hosted demo (GitHub Pages)
+`.github/workflows/pages.yml` runs on every push to `main` (and by hand via
+`workflow_dispatch`). It runs `npm ci`, then `replays:index` (which fails the build if a
+bundled replay has no valid events), then `npm run build` with `BASE_PATH` from
+`actions/configure-pages` and `VITE_REPO_URL` set to the repo's own URL. It deploys
+`dashboard/dist` with `actions/deploy-pages`. **One-time setup:** a repo admin must set
+Settings → Pages → Source to "GitHub Actions".
 
 Environment overrides:
 - `VITE_LIVE_WS_URL` — live WebSocket URL (default `ws://localhost:8090`)
@@ -215,7 +235,17 @@ What was actually run, and the result — so we don't re-litigate "does it work"
 | Mobile width | Headless Chrome at 390px | No horizontal overflow |
 | Both color schemes | Headless Chrome emulated media | Render correctly in light and dark |
 
-**Not yet verified:** a run against the real gateway (only a fake WS server was used), and a
+Session 3 additions:
+
+| Check | How | Result |
+| --- | --- | --- |
+| Curation script | Curated a fake gateway file with 2 bad lines; re-ran with `--name`/`--title`; ran `replay:sample` after; tried an empty file | Bad lines dropped, curated file first, titles kept, sample didn't clobber index, empty file rejected |
+| CI-style build | `BASE_PATH=/siren-Hackachusetts-` (no trailing slash, as `configure-pages` outputs it) | Asset paths rewritten to `/siren-Hackachusetts-/` |
+| Hosted, no backend | `dist` served under `/siren-Hackachusetts-/`, nothing on port 8090, headless Chrome | Falls back to replay, flags `auditor-llm-large`, shows "Watching a recorded attack" banner linking to the repo |
+| Phone width | Chrome DevTools protocol, measured `scrollWidth` at 320/390/768/1440 px | **Found** the replay `<select>` overflowing to 534 px at 390 px; fixed in `App.css`; now 0 overflow at all four widths |
+| Workflow file | Parsed YAML; checked each action's latest major tag exists | Parses; uses checkout@v7, setup-node@v7, configure-pages@v6, upload-pages-artifact@v5, deploy-pages@v5. Not yet run on GitHub |
+
+**Not yet verified:** the Pages workflow running on GitHub, a run against the real gateway (only a fake WS server was used), and a
 containerized Docker build (expected to fail on the `../../shared` type import — see gaps).
 
 ---
@@ -241,6 +271,29 @@ containerized Docker build (expected to fail on the `../../shared` type import �
 ## Session Log
 
 Newest entries first. Append a new entry at the end of each work session.
+
+### 2026-10-24 — Session 3: Prompt C, hosted demo
+
+**Goal:** Pages workflow, replay curation + generated `index.json`, replay banner.
+
+**Done:**
+1. Added `.github/workflows/pages.yml` (build `/dashboard` with the Pages base path, deploy
+   on every push to `main`).
+2. Added `scripts/replay-index.ts` (shared index rebuild) and `scripts/curate-replays.ts`,
+   plus `replays:curate` / `replays:index` npm scripts. `make-sample-replay.ts` now uses the
+   shared rebuild so it keeps curated entries.
+3. The "Watching a recorded attack" banner with the GitHub link already existed from
+   Session 1. Confirmed it renders in the hosted build, and that CI points the link at the
+   repo via `VITE_REPO_URL`.
+4. Fixed a phone-width overflow: the replay `<select>` sized itself to the longest title.
+5. Verified everything listed under "Session 3 additions" above.
+
+**Not done:** no real gateway recording exists yet, so only the synthetic sample is bundled.
+The workflow hasn't run on GitHub yet, because it needs PR #2 merged and Pages enabled.
+`origin/main` already has `dashboard/public/replays/index.json` as `[]` (from the bait
+kickoff), so PR #2 will have an add/add conflict on that file. Keep our version.
+
+**Next session:** Kiro Crew walks the hosted URL like a judge; curate a real run; Prompt D.
 
 ### 2026-10-24 — Session 2: Progress docs + Kiro log
 

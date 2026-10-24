@@ -77,10 +77,37 @@ Default autonomy: Auto. Surfaces used so far: Kiro IDE.
   paths and dry-running the add caught the ignore rules before anything wrong got committed.
 - **Screenshot:** _TODO — add `img/stage-pr.png`._
 
+## 2026-10-24 — Hosted demo (Prompt C), vibe session in the IDE
+
+- **Feature used:** Kiro IDE (vibe chat, Autopilot) + GitHub CLI + headless Chrome.
+- **What I asked Kiro and why that feature fit:** "execute on prompt C": a Pages workflow,
+  replay curation with a generated `index.json`, and the replay banner. It's a small,
+  well-bounded change, so a chat session fit better than a spec.
+- **What it got right:**
+  - Checked the latest major tag of each GitHub Action with `gh api` instead of
+    writing versions from memory.
+  - Read `base_path` from `configure-pages`, so a custom domain still works.
+  - Noticed the banner already existed and didn't rebuild it.
+  - Found that the gateway writes `replays/<startMs>.jsonl` and built the curation script
+    around that format.
+  - Noticed `npm run replay:sample` would have overwritten curated entries in
+    `index.json` and fixed it.
+- **What I corrected / what it caught:** the first phone screenshot showed the source
+  controls cut off. Measuring through the DevTools protocol showed the replay `<select>` was
+  534 px wide in a 390 px viewport, because it sized itself to the longest replay title.
+  Session 1's "no mobile overflow" check had missed this. A two-line CSS fix gave 0 overflow
+  at 320, 390, 768 and 1440 px. Kiro also flagged that `origin/main` already has an empty
+  `index.json`, so PR #2 will conflict on that file. Pages also needs a repo admin to turn it
+  on, and my account only has write access.
+- **Compared to vibe coding:** this was vibe coding, and it suited a task this size. The
+  lesson is the same as the spec session: the screenshot caught a bug that an earlier
+  "verified" claim had missed.
+- **Screenshot:** `img/stage-hosted-phone.png` (after the fix), `img/stage-hosted-desktop.png`.
+
 ---
 
 ## Backlog for this log (keep filling as we go)
 - Figma MCP: what the design file gave Kiro that a screenshot wouldn't (when we do the token pass).
-- Prompt C: Pages workflow + hosted demo; Kiro Crew walking the hosted URL like a judge.
+- Kiro Crew walking the hosted URL like a first-time judge (after Pages is live).
 - Prompt D: the `stage-docs-sync` manual hook that compiles `KIRO.md`.
 - Add real screenshots to `docs/kiro-log/img/` and link them above.

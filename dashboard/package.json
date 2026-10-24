@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "replay:sample": "node scripts/make-sample-replay.ts",
+    "replays:curate": "node scripts/curate-replays.ts",
+    "replays:index": "node scripts/curate-replays.ts",
     "preview": "vite preview"
   },
   "dependencies": {
