@@ -1,14 +1,15 @@
 {
   "name": "attacker",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
+  "description": "Maelstrom demo attacker: an authorized pentester agent that probes the local sandbox gateway only.",
   "scripts": {
     "start": "tsx src/index.ts"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "tsx": "^4.23.15",
-    "typescript": "^5.4.0"
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
   }
 }

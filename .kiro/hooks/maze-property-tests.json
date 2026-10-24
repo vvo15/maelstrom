@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "maze-property-tests",
+      "trigger": "PostFileSave",
+      "description": "On save under gateway/src/maze/, run the maze property-based tests in mock mode and show the shrunk failing example if a property fails.",
+      "matcher": "gateway[\\\\/]src[\\\\/]maze[\\\\/].*\\.(ts|json)$",
+      "action": {
+        "type": "command",
+        "command": "cmd /c \"cd gateway && set SIREN_LLM=mock&& npx vitest run src/maze --reporter=dot\"",
+        "timeout": 120
+      }
+    }
+  ]
+}
