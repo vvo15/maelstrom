@@ -1,5 +1,9 @@
 [
   {
+    "file": "scripted-mock.jsonl",
+    "title": "Scripted AI agent trapped (mock maze)"
+  },
+  {
     "file": "sample-attack.jsonl",
     "title": "Sample attack: an AI agent follows the bait and enters the maze"
   }
