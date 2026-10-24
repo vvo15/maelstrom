@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Siren Gateway is a single Node 20 + TypeScript process that sits in front of a PHP decoy application. For every inbound HTTP request it derives a stable session identity, scores the session against a fixed set of behavioral signals, and decides whether to forward the request untouched to the decoy or to hand the request to an adversarial "maze" that wastes the attacker's time and tokens. The Gateway observes, scores, and routes; it never generates maze content itself. For every request the Gateway emits exactly one structured telemetry event, streams that event to a live dashboard over WebSocket, and persists it to a replay log.
+The Siren Gateway is a single Node 20 + TypeScript process that sits in front of a PHP decoy application. For every inbound HTTP request it derives a stable session identity, scores the session against a fixed set of behavioral signals, and decides whether to forward the request transparently to the decoy, subject to the request-header exclusions in Requirement 2, or to hand the request to an adversarial "maze" that wastes the attacker's time and tokens. The Gateway observes, scores, and routes; it never generates maze content itself. For every request the Gateway emits exactly one structured telemetry event, streams that event to a live dashboard over WebSocket, and persists it to a replay log.
 
 The Gateway is implemented in `gateway/src` using only Node's built-in `http` module, the built-in `fetch`, and the `ws` library for WebSocket. The Gateway treats the maze implementation as an opaque dependency: it imports a `Maze` implementation from `./maze` (owned by the Labyrinth component) and consumes it only through the `Maze` interface defined in `shared/contracts.ts`. The Gateway MUST NOT create or modify anything under `gateway/src/maze`.
 
@@ -54,7 +54,7 @@ The build ordering intent is encoded in requirement priority: the transparent HT
 #### Acceptance Criteria
 
 1. THE Gateway SHALL listen for HTTP requests on port 8080.
-2. WHILE the Session's Flagged state was false at the start of handling the current request, before the current request is scored, WHEN an HTTP request is received, THE Gateway SHALL forward the request to Decoy_Url using the request method, path, and body.
+2. WHILE the Session's Flagged state was false at the start of handling the current request, before the current request is scored, WHEN an HTTP request is received, THE Gateway SHALL forward the request to Decoy_Url using the request method, path, body, and all inbound request headers with their values unchanged, including `user-agent`, `content-type`, `authorization`, and `cookie`, except that the Gateway SHALL omit `connection`, `keep-alive`, `transfer-encoding`, `upgrade`, `proxy-authorization`, `te`, `trailer`, `host`, `content-length`, and the Session_Header from the forwarded inbound headers so that the outbound HTTP client sets `host` and `content-length` and Requirement 2.3 supplies the authoritative Session_Header.
 3. WHEN the Gateway forwards a request to Decoy_Url, THE Gateway SHALL add the Session_Header with the request's Session_Id value.
 4. WHEN the Decoy returns a response, THE Gateway SHALL return the Decoy response status, headers, and body to the client.
 5. THE Gateway SHALL read Decoy_Url from the `DECOY_URL` environment variable.

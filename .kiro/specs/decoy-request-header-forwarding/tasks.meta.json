@@ -1,0 +1,165 @@
+{
+  "pbtResults": {
+    "1. Write the Decoy request-header bug condition exploration test": {
+      "status": "passed",
+      "lastRunTimestamp": 1792873993789
+    },
+    "2. Write non-header proxy preservation property tests before implementing the fix": {
+      "status": "passed",
+      "lastRunTimestamp": 1792873939817
+    },
+    "3.4 Verify the bug condition exploration test now passes": {
+      "status": "passed",
+      "lastRunTimestamp": 1792874216294
+    },
+    "3.5 Verify preservation properties still pass": {
+      "status": "passed",
+      "lastRunTimestamp": 1792874150773
+    }
+  },
+  "executionHistory": {
+    "1. Write the Decoy request-header bug condition exploration test": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873678896
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873681624
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873781212
+      }
+    ],
+    "2. Write non-header proxy preservation property tests before implementing the fix": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873678941
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873783825
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873857385
+      }
+    ],
+    "3.1 Extend `forwardToDecoy` and cover request-header projection edge cases": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873678963
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873859722
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873950562
+      }
+    ],
+    "3.2 Pass a de-forged inbound-header snapshot on the Decoy route": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873679068
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873954146
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874006683
+      }
+    ],
+    "3.3 Reconcile the stale Gateway design and steering contract": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873679085
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874009360
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874084776
+      }
+    ],
+    "3.4 Verify the bug condition exploration test now passes": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873679111
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874087325
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874113614
+      }
+    ],
+    "3.5 Verify preservation properties still pass": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873679129
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874116298
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874159272
+      }
+    ],
+    "4. Checkpoint - run targeted checks and Gateway regressions": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792873679147
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874162115
+      },
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874264432
+      }
+    ],
+    "3. Fix Decoy-bound request-header forwarding": [
+      {
+        "executionId": "5760c581-6b35-49bd-86d4-f7043478e9d8",
+        "chatSessionId": "sess_4bc954ec-ec2e-4b54-88d2-8634f8cb1602",
+        "timestamp": 1792874159302
+      }
+    ]
+  }
+}
