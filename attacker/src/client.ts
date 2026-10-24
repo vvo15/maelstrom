@@ -9,15 +9,14 @@ export type HttpResult = {
 };
 
 const targetOrigin = new URL(TARGET_BASE).origin;
+const CONTROL_CHARACTER = /[\u0000-\u001f\u007f]/;
 
 /**
- * The attacker's ONLY capability: make an HTTP request to the sandbox gateway.
+ * The attacker's ONLY HTTP capability: request a path on the sandbox gateway.
  *
- * Host-locked by design: `path` must be a relative path, or an absolute URL
- * whose origin equals the configured gateway origin. Any other host, absolute
- * URL, or scheme is rejected before a request is ever made. Redirects are not
- * followed automatically; a 3xx is returned as-is so the caller stays on the
- * gateway.
+ * Host-locked by design: `path` must begin with exactly one forward slash.
+ * Absolute, scheme-relative, backslash-containing, and control-character paths
+ * are rejected before fetch. Redirects are returned without being followed.
  */
 export async function http_request(
   method: string,
@@ -25,7 +24,7 @@ export async function http_request(
   headers: Record<string, string> = {},
   body?: string
 ): Promise<HttpResult> {
-  const url = resolveSameOrigin(path);
+  const url = resolveGatewayPath(path);
 
   const res = await fetch(url, {
     method,
@@ -48,24 +47,34 @@ export async function http_request(
 }
 
 /**
- * Resolve `path` against the gateway origin and reject anything that would
- * leave it. Throws on a disallowed host.
+ * Resolve a root-relative path against the one allowed gateway origin.
+ * Throws before network I/O for every absolute or ambiguous URL form.
  */
-export function resolveSameOrigin(path: string): string {
+export function resolveGatewayPath(path: string): string {
+  if (
+    !path.startsWith("/") ||
+    path.startsWith("//") ||
+    path.includes("\\") ||
+    CONTROL_CHARACTER.test(path)
+  ) {
+    throw new Error(`blocked: attacker accepts gateway paths only, received ${path}`);
+  }
+
   let resolved: URL;
   try {
-    // Relative paths resolve against the gateway; absolute URLs are validated.
-    resolved = new URL(path, TARGET_BASE);
+    resolved = new URL(path, `${TARGET_BASE}/`);
   } catch {
     throw new Error(`invalid path: ${path}`);
   }
-  if (resolved.origin !== targetOrigin) {
+
+  if (resolved.origin !== targetOrigin || resolved.protocol !== "http:") {
     throw new Error(
       `blocked: attacker may only reach ${targetOrigin}, not ${resolved.origin}`
     );
   }
-  if (resolved.protocol !== "http:" && resolved.protocol !== "https:") {
-    throw new Error(`blocked: disallowed scheme ${resolved.protocol}`);
-  }
   return resolved.toString();
 }
+
+// Backward-compatible export for callers/tests written before the strict path
+// name made the safety boundary explicit.
+export const resolveSameOrigin = resolveGatewayPath;

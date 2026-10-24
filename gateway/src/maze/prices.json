@@ -1,10 +1,11 @@
 {
-  "_comment": "USD per token (per 1M divided by 1e6). input = prompt price, output = completion price. Matched to model_claim by longest substring; 'default' used when no match. Burn figures are ESTIMATES (labeled as such on the dashboard).",
+  "_comment": "USD per token (per-1M list price divided by 1e6). Matched to model_claim by normalized longest substring; 'default' is used when no row matches. Burn figures are estimates, not billing data.",
   "_checked": "2026-10-24",
   "_sources": [
-    "anthropic.com/claude/haiku and anthropic pricing page: Haiku 5.5 $0.10/$0.50 (<=100K prompt), Sonnet 5.5 $2/$10, Opus 5.5 $4/$20, Fable 5.1 $10/$50; Claude 3.5 Haiku ($0.80/$4.00) retired 2026-02-19.",
-    "openai.com/api/pricing: gpt-4o $2.50/$10.00, gpt-4o-mini $0.15/$0.60."
+    "Anthropic official model pages checked 2026-10-24: https://www.anthropic.com/claude/haiku, https://www.anthropic.com/claude/sonnet, https://www.anthropic.com/claude/opus, https://www.anthropic.com/claude/fable.",
+    "OpenAI official API pricing page checked 2026-10-24: https://openai.com/api/pricing/. Legacy GPT rows are retained only as approximate estimates for self-reported model claims."
   ],
+  "_compliance": "Source descriptions are paraphrased; no provider text is reproduced.",
   "prices": {
     "claude-haiku-5.5": { "input": 0.0000001, "output": 0.0000005 },
     "claude-haiku-4.5": { "input": 0.000001, "output": 0.000005 },

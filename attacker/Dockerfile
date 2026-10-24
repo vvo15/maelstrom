@@ -10,8 +10,9 @@ RUN npm ci
 COPY attacker/tsconfig.json ./
 COPY attacker/src ./src
 
-# Default to the repeatable scripted run; override with -e ATTACKER_MODE=llm.
+# Default to the repeatable scripted run. TARGET_URL is validated in config.ts
+# and any value other than this exact gateway URL terminates before network I/O.
 ENV ATTACKER_MODE=scripted
-ENV TARGET_BASE=http://gateway:8080
+ENV TARGET_URL=http://gateway:8080
 
 CMD ["npm", "start"]

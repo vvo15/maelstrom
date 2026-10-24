@@ -4,7 +4,7 @@ import { canaryFor, CANARY_REGEX, DECOY_HEADERS, type CanaryKind } from "../../.
 import type { SirenEvent } from "../../../shared/events";
 import { generateMock, ALLOWED_STATUS, depthOf } from "./mock";
 import { sanitize, containsRealSecret, escapeHtml, containsRawHtml } from "./sanitize";
-import { estimateBurn } from "./burn";
+import { estimateBurn, priceFor } from "./burn";
 import { SirenMaze } from "./index";
 import { predictMock } from "./predict";
 import { techniquesForSession, techniquesForEvents } from "./attack";
@@ -37,7 +37,7 @@ const pathArb = fc.oneof(
   fc.array(segArb, { minLength: 1, maxLength: 5 }).map((segs) => "/" + segs.join("/"))
 );
 
-describe("Maze property: determinism (Requirement R2)", () => {
+describe("Maze property: determinism and immutable cache (Requirement R2)", () => {
   it("generate() is byte-identical for the same (session_id, path), regardless of history", () => {
     fc.assert(
       fc.property(sessionIdArb, pathArb, (sid, path) => {
@@ -50,34 +50,44 @@ describe("Maze property: determinism (Requirement R2)", () => {
     );
   });
 
-  it("SirenMaze.generate() cache returns byte-identical content across calls and histories", async () => {
+  it("SirenMaze.generate() shares one immutable response across calls and histories", async () => {
     const maze = new SirenMaze();
     await fc.assert(
       fc.asyncProperty(sessionIdArb, pathArb, async (sid, path) => {
-        const first = await maze.generate({
+        const firstRequest = {
           session_id: sid,
           method: "GET",
           path,
           body: "",
-          history: [],
-        });
-        const second = await maze.generate({
+          history: [] as SirenEvent[],
+        };
+        const secondRequest = {
           session_id: sid,
           method: "POST",
           path,
           body: "different body",
           history: [fakeEvent(sid, path)],
-        });
-        expect(second.body).toBe(first.body);
-        expect(second.status).toBe(first.status);
-        expect(second.headers).toEqual(first.headers);
+        };
+        const [first, concurrent] = await Promise.all([
+          maze.generate(firstRequest),
+          maze.generate(secondRequest),
+        ]);
+        const repeated = await maze.generate(secondRequest);
+
+        expect(concurrent).toBe(first);
+        expect(repeated).toBe(first);
+        expect(repeated.body).toBe(first.body);
+        expect(repeated.status).toBe(first.status);
+        expect(repeated.headers).toEqual(first.headers);
+        expect(Object.isFrozen(first)).toBe(true);
+        expect(Object.isFrozen(first.headers)).toBe(true);
       })
     );
   });
 });
 
-describe("Maze property: every SIREN_ string is a real canary (Requirement R4)", () => {
-  it("every SIREN_<kind>_<slice> in output equals canaryFor(session_id, kind)", () => {
+describe("Maze property: at most one valid SIREN_ canary (Requirement R5)", () => {
+  it("every canary matches canaryFor(session_id, kind), with at most one per page", () => {
     fc.assert(
       fc.property(sessionIdArb, pathArb, (sid, path) => {
         const { body } = generateMock(sid, path);
@@ -85,18 +95,14 @@ describe("Maze property: every SIREN_ string is a real canary (Requirement R4)",
         const valid = new Set<string>(
           (["DBPASS", "APIKEY", "ADMINTOKEN"] as CanaryKind[]).map((k) => canaryFor(sid, k))
         );
-        for (const m of matches) {
-          expect(valid.has(m)).toBe(true);
-        }
+        expect(matches.length).toBeLessThanOrEqual(1);
+        for (const match of matches) expect(valid.has(match)).toBe(true);
       })
     );
   });
 });
 
-describe("Maze property: sanitize never leaks real secrets (Requirement R4)", () => {
-  // Known real-secret shapes plus fully arbitrary strings and glued-together
-  // fragments, so the fuzzer actively tries to construct a secret the
-  // sanitizer misses (e.g. by concatenation across boundaries).
+describe("Maze property: sanitize never leaks real secrets (Requirement R6)", () => {
   const realSecretArb = fc.oneof(
     fc.constant("AKIAIOSFODNN7EXAMPLE"),
     fc.constant("sk-ant-api03-" + "a".repeat(40)),
@@ -117,8 +123,7 @@ describe("Maze property: sanitize never leaks real secrets (Requirement R4)", ()
         fc.array(realSecretArb, { maxLength: 8 }),
         fc.string(),
         (sid, parts, glue) => {
-          const input = parts.join(glue);
-          const out = sanitize(input, sid);
+          const out = sanitize(parts.join(glue), sid);
           expect(containsRealSecret(out)).toBe(false);
         }
       )
@@ -136,12 +141,11 @@ describe("Maze property: sanitize never leaks real secrets (Requirement R4)", ()
   });
 });
 
-describe("Maze property: no reflected markup escapes (XSS-safe)", () => {
-  // Hostile path segments that try to break out of the surrounding HTML.
+describe("Maze property: no reflected markup escapes (Requirement R12)", () => {
   const hostileSegArb = fc.oneof(
     segArb,
     fc.constant("<script>alert(1)</script>"),
-    fc.constant('"><img src=x onerror=alert(1)>'),
+    fc.constant('\"><img src=x onerror=alert(1)>'),
     fc.constant("</title><svg onload=alert(1)>"),
     fc.constant("'\"></a>"),
     fc.string()
@@ -163,18 +167,13 @@ describe("Maze property: no reflected markup escapes (XSS-safe)", () => {
       fc.property(sessionIdArb, hostilePathArb, (sid, path) => {
         const { status, body } = generateMock(sid, path);
         if (status === 200) {
-          // The reflected path inside <h2>Index of ...</h2> must contain no raw
-          // breakout characters -- they are all entity-encoded.
           const h2 = body.match(/<h2>Index of ([^]*?)<\/h2>/);
           expect(h2).not.toBeNull();
           expect(h2![1]).not.toMatch(/[<>"']/);
-          // href attribute values are likewise free of raw breakout characters.
-          for (const m of body.matchAll(/href="([^"]*)"/g)) {
-            expect(m[1]).not.toMatch(/[<>']/);
+          for (const match of body.matchAll(/href="([^"]*)"/g)) {
+            expect(match[1]).not.toMatch(/[<>']/);
           }
         } else {
-          // Error pages reflect the hint inside an HTML comment "<!-- try ... -->".
-          // The reflected hint must contain no raw breakout characters either.
           const hint = body.match(/<!-- try ([^]*?) -->/);
           expect(hint).not.toBeNull();
           expect(hint![1]).not.toMatch(/[<>"']/);
@@ -184,21 +183,21 @@ describe("Maze property: no reflected markup escapes (XSS-safe)", () => {
   });
 });
 
-describe("Maze property: status and headers (Requirement R?)", () => {
-  it("status is always in the allowed set and headers always include DECOY_HEADERS", () => {
+describe("Maze property: status and headers (Requirement R9)", () => {
+  it("status is always allowed and headers always include DECOY_HEADERS", () => {
     fc.assert(
       fc.property(sessionIdArb, pathArb, (sid, path) => {
         const res = generateMock(sid, path);
         expect((ALLOWED_STATUS as readonly number[]).includes(res.status)).toBe(true);
-        for (const [k, v] of Object.entries(DECOY_HEADERS)) {
-          expect(res.headers[k]).toBe(v);
+        for (const [key, value] of Object.entries(DECOY_HEADERS)) {
+          expect(res.headers[key]).toBe(value);
         }
       })
     );
   });
 });
 
-describe("Maze property: estimateBurn is non-negative and monotonic (Requirement R?)", () => {
+describe("Maze property: burn estimate and model matching (Requirement R10)", () => {
   it("never returns negative values", () => {
     fc.assert(
       fc.property(fc.string(), fc.option(fc.string(), { nil: undefined }), (body, model) => {
@@ -219,102 +218,113 @@ describe("Maze property: estimateBurn is non-negative and monotonic (Requirement
       })
     );
   });
-});
 
-describe("Maze property: links only go deeper, never out (anti-escape)", () => {
-  it("every 200 page links to at least one strictly-deeper path", () => {
+  it("matches dotted and API-style hyphenated model versions to one price row", () => {
     fc.assert(
-      fc.property(sessionIdArb, pathArb, (sid, path) => {
-        const res = generateMock(sid, path);
-        if (res.status !== 200) return; // property only constrains 200 pages
-        const hrefs = [...res.body.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-        expect(hrefs.length).toBeGreaterThan(0);
-        const reqDepth = depthOf(path);
-        const deeper = hrefs.filter((h) => depthOf(h) > reqDepth);
-        expect(deeper.length).toBeGreaterThan(0);
-      })
+      fc.property(
+        fc.constantFrom("haiku", "sonnet", "opus", "fable"),
+        (family) => {
+          const version = family === "fable" ? "5.1" : family === "haiku" ? "4.5" : "5.5";
+          const dotted = `claude-${family}-${version}`;
+          const hyphenated = dotted.replaceAll(".", "-");
+          expect(priceFor(hyphenated)).toEqual(priceFor(dotted));
+        }
+      )
     );
   });
+});
 
-  it("no link on any 200 page is shallower than or equal to the request (cannot climb out)", () => {
+describe("Maze property: links only go deeper, never out (Requirement R8)", () => {
+  it("every 200 page links to at least one strictly-deeper path", () => {
     fc.assert(
       fc.property(sessionIdArb, pathArb, (sid, path) => {
         const res = generateMock(sid, path);
         if (res.status !== 200) return;
         const hrefs = [...res.body.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-        const reqDepth = depthOf(path);
-        for (const h of hrefs) {
-          // Links are built under the request path, so each must be deeper.
-          expect(depthOf(h)).toBeGreaterThan(reqDepth);
-          expect(h.startsWith("/")).toBe(true);
+        expect(hrefs.length).toBeGreaterThan(0);
+        expect(hrefs.some((href) => depthOf(href) > depthOf(path))).toBe(true);
+      })
+    );
+  });
+
+  it("no link on any 200 page is shallower than or equal to the request", () => {
+    fc.assert(
+      fc.property(sessionIdArb, pathArb, (sid, path) => {
+        const res = generateMock(sid, path);
+        if (res.status !== 200) return;
+        const hrefs = [...res.body.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+        for (const href of hrefs) {
+          expect(depthOf(href)).toBeGreaterThan(depthOf(path));
+          expect(href.startsWith("/")).toBe(true);
         }
       })
     );
   });
 });
 
-describe("predictMock is deterministic and path-shaped", () => {
-  it("returns a predicted_next_path starting with '/'", () => {
+describe("Maze property: deterministic path-shaped prediction (Requirement R11)", () => {
+  it("returns the same prediction with a next path beginning '/'", () => {
     fc.assert(
       fc.property(sessionIdArb, fc.array(pathArb, { minLength: 1, maxLength: 15 }), (sid, paths) => {
-        const history = paths.map((p) => fakeEvent(sid, p));
-        const pred = predictMock(history);
-        expect(pred).toBeDefined();
-        expect(pred!.predicted_next_path.startsWith("/")).toBe(true);
+        const history = paths.map((path) => fakeEvent(sid, path));
+        const first = predictMock(history);
+        const second = predictMock(history);
+        expect(first).toBeDefined();
+        expect(second).toEqual(first);
+        expect(first!.predicted_next_path.startsWith("/")).toBe(true);
       })
     );
   });
 });
 
-describe("ATT&CK mapping is deterministic and uses only verified IDs", () => {
+describe("Maze property: ATT&CK mapping integrity (Requirement R13)", () => {
   const VERIFIED_IDS = new Set(["T1595", "T1595.003", "T1552.001", "T1078", "T1190"]);
   const SIGNALS = ["bait_followed", "canary_reused", "think_pauses", "enumeration", "scripted_ua"];
   const signalArb = fc.subarray(SIGNALS);
 
-  it("only ever emits verified technique IDs with a url and rationale", () => {
+  it("only emits verified technique IDs with an official URL and rationale", () => {
     fc.assert(
       fc.property(signalArb, fc.array(pathArb, { maxLength: 8 }), (signals, paths) => {
         const techs = techniquesForSession(signals, paths);
-        for (const t of techs) {
-          expect(VERIFIED_IDS.has(t.id)).toBe(true);
-          expect(t.url.startsWith("https://attack.mitre.org/")).toBe(true);
-          expect(t.rationale.length).toBeGreaterThan(0);
+        for (const technique of techs) {
+          expect(VERIFIED_IDS.has(technique.id)).toBe(true);
+          expect(technique.url.startsWith("https://attack.mitre.org/")).toBe(true);
+          expect(technique.rationale.length).toBeGreaterThan(0);
         }
       })
     );
   });
 
-  it("is deterministic and de-duplicated (no repeated IDs, stable order)", () => {
+  it("is deterministic and de-duplicated", () => {
     fc.assert(
       fc.property(signalArb, fc.array(pathArb, { maxLength: 8 }), (signals, paths) => {
-        const a = techniquesForSession(signals, paths);
-        const b = techniquesForSession(signals, paths);
-        expect(b.map((t) => t.id)).toEqual(a.map((t) => t.id));
-        const ids = a.map((t) => t.id);
+        const first = techniquesForSession(signals, paths);
+        const second = techniquesForSession(signals, paths);
+        expect(second.map((t) => t.id)).toEqual(first.map((t) => t.id));
+        const ids = first.map((t) => t.id);
         expect(new Set(ids).size).toBe(ids.length);
       })
     );
   });
 
-  it("maps canary reuse to Valid Accounts (T1078) and enumeration to scanning", () => {
+  it("maps canary reuse to Valid Accounts and enumeration to scanning", () => {
     const reuse = techniquesForSession(["canary_reused"], ["/staff/portal"]);
     expect(reuse.some((t) => t.id === "T1078")).toBe(true);
 
-    const enumer = techniquesForSession(["enumeration"], ["/a", "/b"]);
-    expect(enumer.some((t) => t.id === "T1595")).toBe(true);
-    expect(enumer.some((t) => t.id === "T1595.003")).toBe(true);
+    const enumerated = techniquesForSession(["enumeration"], ["/a", "/b"]);
+    expect(enumerated.some((t) => t.id === "T1595")).toBe(true);
+    expect(enumerated.some((t) => t.id === "T1595.003")).toBe(true);
   });
 
-  it("derives techniques from an event timeline (union of signals and paths)", () => {
+  it("derives techniques from an event timeline", () => {
     const events: SirenEvent[] = [
       { ...fakeEvent("abcd000000000000", "/.env"), signals: ["bait_followed"] },
       { ...fakeEvent("abcd000000000000", "/admin/console"), signals: ["enumeration"] },
     ];
-    const techs = techniquesForEvents(events);
-    const ids = techs.map((t) => t.id);
-    expect(ids).toContain("T1552.001"); // credentials in files (.env)
-    expect(ids).toContain("T1190"); // exploit public-facing app (admin/console)
-    expect(ids).toContain("T1595"); // active scanning (enumeration)
+    const ids = techniquesForEvents(events).map((t) => t.id);
+    expect(ids).toContain("T1552.001");
+    expect(ids).toContain("T1190");
+    expect(ids).toContain("T1595");
   });
 });
 

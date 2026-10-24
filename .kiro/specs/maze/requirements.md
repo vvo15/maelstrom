@@ -11,6 +11,9 @@ THE System SHALL implement the `Maze` interface from `shared/contracts.ts`:
 ## Requirement 2: Determinism (state-driven)
 THE System SHALL return byte-identical content (status, headers, body) for
 identical `(session_id, path)` pairs, regardless of request history or body.
+WHEN simultaneous first requests use an identical `(session_id, path)`, THE
+System SHALL share one in-flight generation. THE System SHALL make cached
+responses and their headers immutable to callers.
 
 ## Requirement 3: No-key operation (unwanted behavior / safety)
 IF no `ANTHROPIC_API_KEY` is configured, OR `SIREN_LLM` is not `anthropic`,
@@ -49,7 +52,8 @@ headers that always include `DECOY_HEADERS` from `shared/contracts.ts`.
 ## Requirement 10: Burn estimate (monotonic)
 THE System SHALL estimate burn as `tokens = ceil(body.length / 4) + 1500` and
 `usd = tokens * input_price + 300 * output_price`, matching `modelClaim` to a
-price row by substring (else `default`). Burn SHALL be non-negative and SHALL
+price row by normalized substring (else `default`). Dotted and hyphenated model
+versions SHALL match the same price row. Burn SHALL be non-negative and SHALL
 NOT decrease as the body grows. Figures are labeled estimates.
 
 ## Requirement 11: Prediction
@@ -57,3 +61,28 @@ THE System SHALL derive a prediction (`likely_goal`, `current_step`,
 `predicted_next_path`) from the session's last 15 events. In mock mode this is
 a deterministic heuristic; in anthropic mode a single short LLM call with the
 heuristic as fallback. `predicted_next_path` SHALL begin with `/`.
+
+## Requirement 12: Safe HTML reflection
+WHEN attacker-controlled path text appears in an HTML body or link attribute,
+THE System SHALL HTML-escape the text so no raw markup-breaking character can
+escape its intended text or attribute context.
+
+## Requirement 13: ATT&CK mapping integrity
+WHEN signals or paths map to MITRE ATT&CK techniques, THE System SHALL return a
+deterministic, de-duplicated list containing only the verified IDs `T1595`,
+`T1595.003`, `T1552.001`, `T1078`, and `T1190`, with an official ATT&CK URL and
+non-empty rationale for every result.
+
+## Correctness property mapping
+
+| Property suite | Requirement | Property evidence |
+| --- | --- | --- |
+| Deterministic generation and immutable shared cache | R2 | `maze.properties.test.ts` determinism suite |
+| At most one valid SIREN_ canary | R5 | canary suite |
+| Sanitizer never emits a real-secret shape | R6 | sanitizer suite |
+| Reflected path text cannot break HTML context | R12 | XSS-safe suite |
+| Allowed status and decoy headers | R9 | response-shape suite |
+| Non-negative, monotonic burn and normalized model IDs | R10 | burn suite |
+| Every successful page links only deeper | R8 | anti-escape suite |
+| Deterministic, path-shaped mock prediction | R11 | prediction suite |
+| Verified, deterministic, de-duplicated ATT&CK IDs | R13 | ATT&CK suite |

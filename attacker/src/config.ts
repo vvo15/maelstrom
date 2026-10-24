@@ -1,8 +1,18 @@
-// All attacker configuration comes from the environment, with safe defaults so
-// a demo runs with no setup. The attacker is sandbox-only: it may reach exactly
-// one host, the gateway.
+// All attacker configuration uses safe defaults so a demo runs with no setup.
+// The HTTP tool is sandbox-only: its target is always the Compose gateway.
 
-export const TARGET_BASE = process.env.TARGET_BASE || "http://gateway:8080";
+const GATEWAY_TARGET = "http://gateway:8080";
+const configuredTarget = process.env.TARGET_URL ?? process.env.TARGET_BASE ?? GATEWAY_TARGET;
+
+// Accept the Compose variable and the former TARGET_BASE name only when they
+// preserve the fixed sandbox target. Configuration must never expand egress.
+if (configuredTarget !== GATEWAY_TARGET) {
+  throw new Error(
+    `blocked: attacker target is fixed at ${GATEWAY_TARGET}; received ${configuredTarget}`
+  );
+}
+
+export const TARGET_BASE = GATEWAY_TARGET;
 
 // User agent intentionally looks like a scripted HTTP client so the detector's
 // scripted_ua signal can fire. This is a demo of an automated agent.

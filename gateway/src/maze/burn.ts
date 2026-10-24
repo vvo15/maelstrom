@@ -11,23 +11,29 @@ export const ASSUMED_AGENT_OVERHEAD_TOKENS = 1500;
 // Assumed output tokens the agent generates to decide its next move.
 export const ASSUMED_OUTPUT_TOKENS = 300;
 
+/** Normalize API-style `4-5`, display-style `4.5`, and underscore variants. */
+function normalizeModelName(value: string): string {
+  return value.toLowerCase().replace(/[._]/g, "-");
+}
+
 /**
- * Pick a price row by matching modelClaim as a substring of a known key, or a
- * known key as a substring of modelClaim (so "claude-3-5-haiku-20241022" still
- * matches "claude-3-5-haiku"). Falls back to "default".
+ * Pick a price row by matching a normalized model claim against a known key.
+ * Normalization makes API IDs such as `claude-haiku-4-5` match the pricing-row
+ * label `claude-haiku-4.5`. Falls back to "default".
  *
  * modelClaim is self-reported by the attacker and may be wrong or absent; the
  * dashboard labels the resulting burn figure as an estimate.
  */
 export function priceFor(modelClaim?: string): Price {
   if (modelClaim) {
-    const claim = modelClaim.toLowerCase();
+    const claim = normalizeModelName(modelClaim);
     // Prefer the longest matching key so "gpt-4o" wins over "gpt".
     const keys = Object.keys(PRICES)
       .filter((k) => k !== "default")
       .sort((a, b) => b.length - a.length);
     for (const key of keys) {
-      if (claim.includes(key) || key.includes(claim)) {
+      const normalizedKey = normalizeModelName(key);
+      if (claim.includes(normalizedKey) || normalizedKey.includes(claim)) {
         return PRICES[key];
       }
     }

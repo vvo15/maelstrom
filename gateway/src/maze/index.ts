@@ -16,9 +16,9 @@ import { llmMode } from "./llm";
  *
  * - generate(): serves an endless fake "Town of Millbrook" internal system.
  *   Cached per (session_id, path) so a revisited path returns byte-identical
- *   content. In mock mode (default, no API key) pages are deterministic
- *   templates; in anthropic mode they come from a cheap model with an 8s
- *   timeout and automatic fallback to mock for that path.
+ *   content. Concurrent first requests share the same in-flight generation.
+ *   In mock mode (default, no API key) pages are deterministic templates; in
+ *   anthropic mode they use an 8s timeout and automatic fallback to mock.
  * - estimateBurn(): estimates tokens/USD an agent burned reading a response.
  * - predict(): infers the agent's likely goal and next path.
  *
@@ -28,8 +28,9 @@ import { llmMode } from "./llm";
  * working exploit code.
  */
 export class SirenMaze implements Maze {
-  // Cache key = `${session_id}\u0000${path}`. Value = frozen MazeResponse.
-  private cache = new Map<string, MazeResponse>();
+  // Cache the in-flight promise, not just its result. Two simultaneous first
+  // requests for the same key therefore cannot produce different LLM pages.
+  private cache = new Map<string, Promise<MazeResponse>>();
 
   private cacheKey(sessionId: string, path: string): string {
     return `${sessionId}\u0000${path}`;
@@ -40,6 +41,20 @@ export class SirenMaze implements Maze {
     const cached = this.cache.get(key);
     if (cached) return cached;
 
+    const pending = this.generateUncached(req);
+    this.cache.set(key, pending);
+
+    try {
+      return await pending;
+    } catch (error) {
+      // Do not permanently cache an unexpected generator failure. Delete only
+      // our own promise in case the implementation changes to replace entries.
+      if (this.cache.get(key) === pending) this.cache.delete(key);
+      throw error;
+    }
+  }
+
+  private async generateUncached(req: MazeRequest): Promise<MazeResponse> {
     let response: MazeResponse;
     if (llmMode() === "anthropic") {
       try {
@@ -51,14 +66,14 @@ export class SirenMaze implements Maze {
       response = generateMock(req.session_id, req.path);
     }
 
-    // Freeze so callers cannot mutate the cached value.
-    const frozen: MazeResponse = {
+    // Freeze both levels so a caller cannot mutate the cached response seen by
+    // a later revisit. The Maze contract is read-only in practice.
+    const headers = Object.freeze({ ...response.headers });
+    return Object.freeze({
       status: response.status,
-      headers: { ...response.headers },
+      headers,
       body: response.body,
-    };
-    this.cache.set(key, frozen);
-    return frozen;
+    }) as MazeResponse;
   }
 
   estimateBurn(responseBody: string, modelClaim?: string): { tokens: number; usd: number } {
