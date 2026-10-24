@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "bait-safety-lint",
+      "trigger": "PostFileSave",
+      "description": "On save in decoy/, runs safety-lint.sh — fails if any PHP file calls dangerous functions, any credential lacks SIREN_ prefix, or any real secret format appears.",
+      "matcher": "decoy/",
+      "action": {
+        "type": "command",
+        "command": "bash decoy/scripts/safety-lint.sh"
+      }
+    }
+  ]
+}
