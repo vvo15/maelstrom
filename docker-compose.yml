@@ -28,6 +28,7 @@ services:
         required: false
     environment:
       DECOY_URL: http://decoy
+      REPLAY_DIR: /replays   # matches the volume below, so replays land in ./replays on the host
     depends_on: [decoy]
     networks: [internal, web, attack]
     volumes:
