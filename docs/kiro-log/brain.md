@@ -30,3 +30,13 @@
 - Property 7 (replay round-trip) failed on the smallest possible event. Shrinking 26 times reduced it to an event with every field at its minimum, which pointed straight at the cause: fast-check 4's fc.record can build null-prototype objects, and JSON.parse never does, so toStrictEqual failed even though every value matched.
 - Fix: noNullPrototype: true in the generator. We kept toStrictEqual instead of loosening to toEqual, because the strict check still catches a key: undefined that JSON would silently drop.
 - Lesson: shrinking made the difference between a real format bug and a test-setup artifact obvious within minutes.
+
+## Gateway spec complete
+- 23 tests in 14 files, all 7 correctness properties covered, green on 5 consecutive runs.
+- Kiro verified the history-snapshot test is meaningful by temporarily reverting the fix: the test failed (5 events where 3 were expected), proving it guards the behavior.
+- Final end-to-end run through the real entry point: 4 decoy requests, /verify flagged at score 70 but still served by the decoy, 5 maze requests; replay file and WebSocket stream had 10 matching events.
+
+## Integration 2 on the real stack
+- docker compose (real PHP decoy + gateway): scripted sequence with the python-httpx user agent.
+- Result: 4 requests to the decoy at score 10; /verify flagged at score 70 but still served by the decoy; /staff/portal and /admin routed to the maze.
+- The routing rule fixed during requirements review (route on the pre-scoring flag) is exactly what makes the /verify bait page reachable in the real system.
