@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Siren demo attacker: an authorized pentester agent that probes the local sandbox gateway only.",
+  "description": "Maelstrom demo attacker: an authorized pentester agent that probes the local sandbox gateway only.",
   "scripts": {
     "start": "tsx src/index.ts"
   },

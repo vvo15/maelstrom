@@ -1,5 +1,5 @@
-# Siren demo attacker. Runs under compose profile "attack" and can reach only
-# the gateway service on the internal network.
+# Maelstrom demo attacker. Runs under compose profile "attack" and can reach
+# only the gateway service on the internal network.
 FROM node:20-slim
 
 WORKDIR /app

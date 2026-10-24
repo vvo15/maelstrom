@@ -1,7 +1,7 @@
 import type { SirenEvent } from "../../../shared/events";
 
 /**
- * MITRE ATT&CK technique mapping for Siren.
+ * MITRE ATT&CK technique mapping for Maelstrom.
  *
  * Maps the detector's signals and an agent's request paths to ATT&CK Enterprise
  * technique IDs so the dashboard can show grounded, verifiable chips instead of
@@ -15,7 +15,7 @@ export type AttackTechnique = {
   name: string; // human-readable name
   tactic: string; // ATT&CK tactic bucket
   url: string; // canonical attack.mitre.org link
-  rationale: string; // why Siren mapped it (what triggered it)
+  rationale: string; // why Maelstrom mapped it (what triggered it)
 };
 
 const T = {

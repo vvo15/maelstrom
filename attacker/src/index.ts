@@ -3,7 +3,7 @@ import { info } from "./ui.js";
 
 async function main(): Promise<void> {
   const mode = attackerMode();
-  info(`Siren demo attacker starting (mode=${mode})`);
+  info(`Maelstrom demo attacker starting (mode=${mode})`);
   info("This agent targets ONLY the local sandbox gateway. It is defensive-demo use.");
 
   if (mode === "llm") {

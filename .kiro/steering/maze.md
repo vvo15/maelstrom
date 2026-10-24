@@ -4,6 +4,12 @@ fileMatchPattern: "{gateway/src/maze/**,attacker/**}"
 ---
 # Maze and attacker rules
 
+- Product name is Maelstrom. The `SIREN_` prefix (canary format `SIREN_<KIND>_`,
+  `CANARY_REGEX`, the `SIREN_LLM` env var) and the `SirenEvent` type are the
+  FROZEN cross-module contract in shared/*. Do NOT rename them to match the
+  product: the decoy, gateway detector, and attacker all depend on the exact
+  literals. A protocol identifier is not the product name. Only rename on a
+  team-wide re-freeze of the contract.
 - Mock mode must always work with no API key. The demo and the judges depend
   on it. `SIREN_LLM=mock` is the default whenever `ANTHROPIC_API_KEY` is unset.
 - Every credential comes from `canaryFor()` in shared/contracts.ts. Every body
