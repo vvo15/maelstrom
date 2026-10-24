@@ -46,3 +46,13 @@
 - Found during Integration 2: the decoy's Apache logs showed every request with user agent "node". The gateway forwarded only method, path and body, so Content-Type (form POSTs), Authorization and Cookie never reached the decoy.
 - Root cause traced to our own spec: Requirement 2.2 listed only method, path and body, and our steering line "the decoy gets only the x-siren-session header added" reinforced it. The bugfix spec updated the requirement, the steering, the code, and added a regression test.
 - Compared to a chat fix: the spec traced the bug to the requirement and steering that caused it, so it can't come back on the next Kiro run.
+
+## Submission checks (Brain-owned)
+- Secret scan of full git history (all branches): only test fixtures matched (AWS's documented example key AKIAIOSFODNN7EXAMPLE and bare PEM headers inside fc.constant property-test inputs). No real .env ever committed.
+- Clean-clone check: fresh clone of vvo15/maestrom, cp .env.example .env, docker compose up --build decoy gateway → gateway responds 200.
+- Kiro Web: started a cloud session from GitHub issue #3 (replay validator) while continuing local work.
+
+## Kiro Web (cloud agent)
+- Created GitHub issue #3 (replay validator), connected the repo at app.kiro.dev, and ran it as an autonomous cloud session while I kept working locally on submission checks.
+- Result: PR #4 touching exactly the 2 files the issue allowed, tested against valid, invalid and no-argument fixtures. It reported honestly that its sandbox blocked npm, so it couldn't run tsx; I verified it locally against real replay files from our Integration 2 Docker run.
+- Compared to the IDE: zero setup on my machine and fully parallel, but the issue had to be self-contained and scoped by file. Good for well-bounded tasks, not for work that depends on local services.
