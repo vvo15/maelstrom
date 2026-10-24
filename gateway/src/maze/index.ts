@@ -73,3 +73,6 @@ export class SirenMaze implements Maze {
 // Default singleton export so the gateway can `import maze from "./maze"`.
 const maze: Maze = new SirenMaze();
 export default maze;
+
+// Named export too, matching the kickoff stub that gateway/src/io/mazeAdapter.ts imports.
+export { maze };

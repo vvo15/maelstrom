@@ -4,11 +4,11 @@ FROM node:20-slim
 
 WORKDIR /app
 
-COPY package.json ./
-RUN npm install
+COPY attacker/package.json attacker/package-lock.json ./
+RUN npm ci
 
-COPY tsconfig.json ./
-COPY src ./src
+COPY attacker/tsconfig.json ./
+COPY attacker/src ./src
 
 # Default to the repeatable scripted run; override with -e ATTACKER_MODE=llm.
 ENV ATTACKER_MODE=scripted
