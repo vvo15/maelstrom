@@ -9,8 +9,8 @@
  * aiScore=0, an empty signals set, flagged=false), so the stubbed behavior is
  * satisfied without any detector code.
  *
- * Later tasks replace the inline session-id placeholder with
- * `detector/sessionId.ts#deriveSessionId` (task 4.1) and wire in detection,
+ * The session id comes from the pure `detector/sessionId.ts#deriveSessionId`
+ * (Req 1.1). Later tasks wire in detection,
  * routing to the Maze, burn accounting, and prediction (tasks 6.x), plus the
  * full decoy-error -> 502 handling (task 8.1). This file deliberately keeps a
  * minimal try/catch so a thrown `forwardToDecoy` cannot crash the process.
@@ -27,6 +27,7 @@
 import http from "node:http";
 
 import { readConfig } from "../config";
+import { deriveSessionId } from "../detector/sessionId";
 import { getOrCreateSession } from "../session/sessionStore";
 import { forwardToDecoy } from "./decoy";
 import { buildSirenEvent, emit } from "./emitter";
@@ -42,27 +43,6 @@ const SESSION_HEADER = "x-siren-session";
 export type GatewayServerConfig = {
   decoyUrl: string;
 };
-
-/**
- * Temporary, self-contained session-id derivation for the proxy-only phase.
- *
- * Task 4.1 replaces this with the pure `deriveSessionId(sourceIp, userAgent)`
- * from `detector/sessionId.ts` (first 16 hex chars of a sha256). For now we
- * need only a deterministic per-client string, so a trivial FNV-1a hash over
- * the remote address + user agent is enough and keeps the module free of any
- * dependency on the not-yet-built detector.
- */
-function placeholderSessionId(sourceIp: string, userAgent: string): string {
-  const input = `${sourceIp}|${userAgent}`;
-  // 32-bit FNV-1a, rendered as zero-padded 8-char hex. Deterministic.
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i);
-    // FNV prime multiply, kept in 32-bit range.
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return (hash >>> 0).toString(16).padStart(8, "0");
-}
 
 /** Collect the full request body into a Buffer, then decode as UTF-8. */
 function readBody(req: http.IncomingMessage): Promise<string> {
@@ -92,9 +72,9 @@ function createHandler(
     const sourceIp = req.socket.remoteAddress ?? "";
     const userAgent = (req.headers["user-agent"] as string | undefined) ?? "";
 
-    // Step 2: derive the session id (placeholder for this phase, step 3) and
-    // get/create its state (step 4). These don't depend on the body.
-    const sessionId = placeholderSessionId(sourceIp, userAgent);
+    // Step 2: derive the session id via the pure `deriveSessionId` (step 3,
+    // Req 1.1) and get/create its state (step 4). These don't depend on the body.
+    const sessionId = deriveSessionId(sourceIp, userAgent);
     const session = getOrCreateSession(sessionId);
 
     // Read the full body, then run the async lifecycle. Any error is caught so

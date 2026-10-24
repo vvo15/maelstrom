@@ -161,6 +161,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458023
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867262289
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867317664
       }
     ],
     "4.2 Write property test for session id shape": [
@@ -168,6 +178,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458079
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867320907
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867388027
       }
     ],
     "4.3 Implement `detector/signals.ts`": [
@@ -175,6 +195,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458121
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867388623
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867476615
       }
     ],
     "4.4 Write property test for canary presence": [
@@ -182,6 +212,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458166
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867476566
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867550511
       }
     ],
     "4.5 Write example test for repeated canary string (non-property guard)": [
@@ -189,6 +229,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458201
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867551213
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867593220
       }
     ],
     "4.7 Implement `detector/score.ts`": [
@@ -196,6 +246,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458240
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867593766
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867633984
       }
     ],
     "4.8 Write property test for bounded score": [
@@ -203,6 +263,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458285
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867634522
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867694742
       }
     ],
     "4.9 Implement `detector/route.ts`": [
@@ -210,6 +280,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458331
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867695424
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867737047
       }
     ],
     "4.10 Write property test for monotonic score": [
@@ -217,6 +297,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458381
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867737806
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867888760
       }
     ],
     "4.11 Write property test for latched flag implies maze routing": [
@@ -224,6 +314,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458435
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867889019
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867981840
       }
     ],
     "5. Checkpoint - detector unit + property tests pass": [
@@ -231,6 +331,16 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866458559
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867982588
+      },
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792868036861
       }
     ],
     "6.1 Implement the maze adapter `io/mazeAdapter.ts`": [
@@ -376,6 +486,13 @@
         "executionId": "f5912d59-ab58-49fb-949c-4d1b32ed1bdb",
         "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
         "timestamp": 1792866943670
+      }
+    ],
+    "4. Pure Detector core": [
+      {
+        "executionId": "035f887f-8f38-4ca5-b3dd-767347e1e458",
+        "chatSessionId": "sess_ef9add46-98c8-453d-957c-25f859e1406f",
+        "timestamp": 1792867981886
       }
     ]
   }

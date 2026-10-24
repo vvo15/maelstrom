@@ -67,31 +67,31 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
 - [x] 3. Checkpoint - proxy + stream run green
   - Ensure `tsc` build passes and all tests pass with `vitest --run`, ask the user if questions arise.
 
-- [ ] 4. Pure Detector core
-  - [~] 4.1 Implement `detector/sessionId.ts`
+- [x] 4. Pure Detector core
+  - [x] 4.1 Implement `detector/sessionId.ts`
     - Implement `deriveSessionId(sourceIp, userAgent)` returning the first 16 lowercase hex chars of `sha256(sourceIp + "|" + userAgent)` using `node:crypto` as a pure transform
     - Wire `io/server.ts` to use `deriveSessionId` for the session id
     - _Requirements: 1.1, 1.3, 10.1, 10.2_
 
-  - [~] 4.2 Write property test for session id shape
+  - [x] 4.2 Write property test for session id shape
     - **Feature: siren-gateway, Property 4: Deterministic session id shape** — exercises `deriveSessionId`
     - Arbitrary: `fc.tuple(fc.string(), fc.string())` including unicode and empty strings; assert output matches `/^[0-9a-f]{16}$/` and equal inputs produce identical values; minimum 100 iterations
     - **Validates: Requirements 1.1, 1.3, 10.2 (Property 4)**
 
-  - [~] 4.3 Implement `detector/signals.ts`
+  - [x] 4.3 Implement `detector/signals.ts`
     - Define `SIGNALS`, `SIGNAL_WEIGHTS` (bait_followed 60, canary_reused 40, think_pauses 15, enumeration 10, scripted_ua 10), `SCRIPTED_UA_TOKENS`, and the `RequestMeta` type
     - Implement `detectSignals(history, current)`: `bait_followed` (query-stripped path case-sensitively equal to or prefixed by a `BAIT_PATHS` entry), `canary_reused`, `think_pauses` (most recent up to 12 events ordered by `ts` plus current: >=2 gaps >2000 ms and >=3 gaps <800 ms), `enumeration` (>=8 distinct paths in a 60000 ms window AND >=30% of previously-completed requests' statuses in the window are 403/404, excluding the current request), and `scripted_ua` (case-insensitive substring of any token)
     - For `canary_reused`, build a fresh `RegExp` from `CANARY_REGEX.source` per check (never call `.test()`/`.exec()` on the shared global instance), matching against the URL, body, and each single header value
     - Verify with `tsc --noEmit`
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 10.1, 10.2_
 
-  - [~] 4.4 Write property test for canary presence
+  - [x] 4.4 Write property test for canary presence
     - **Feature: siren-gateway, Property 5: Canary presence sets the signal** — exercises `detectSignals`
     - Arbitraries: a session id string, a `CanaryKind` from `fc.constantFrom("DBPASS","APIKEY","ADMINTOKEN")`, and a placement selector (URL / body / one header value); embed `canaryFor(sessionId, kind)` into random surrounding text and assert the output includes `canary_reused`; minimum 100 iterations
     - Stateful-global-regex guard: because 100+ iterations run in one process, an advancing `lastIndex` on the shared `CANARY_REGEX` would make the signal appear only on alternating iterations and fail the property — this test explicitly guards that
     - **Validates: Requirements 4.2 (Property 5)**
 
-  - [~] 4.5 Write example test for repeated canary string (non-property guard)
+  - [x] 4.5 Write example test for repeated canary string (non-property guard)
     - Feed the **same** canary string to `detectSignals` on two consecutive calls and assert `canary_reused` is present **both** times, so a stateful shared global regex fails loudly
     - _Requirements: 4.2_
 
@@ -99,32 +99,32 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - `bait_followed` prefix vs exact match, case sensitivity, query-string stripping (Req 4.1); `think_pauses` exactly-12 boundary and gap thresholds (Req 4.3); `enumeration` 8-distinct-paths/30%-403-404/60s-boundary/current-request-exclusion (Req 4.4); `scripted_ua` per-token case-insensitive matching (Req 4.5); signal recorded at most once per session (Req 4.6)
     - _Requirements: 4.1, 4.3, 4.4, 4.5, 4.6_
 
-  - [~] 4.7 Implement `detector/score.ts`
+  - [x] 4.7 Implement `detector/score.ts`
     - Implement `scoreSignals(signals)` = `min(100, sum of weights)`, `hasFlagged(aiScore)` = `aiScore >= 50`, and `latchFlag(previouslyFlagged, aiScore)` that stays true once set
     - Verify with `tsc --noEmit`
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 10.1, 10.2_
 
-  - [~] 4.8 Write property test for bounded score
+  - [x] 4.8 Write property test for bounded score
     - **Feature: siren-gateway, Property 1: Bounded score** — exercises `scoreSignals`
     - Arbitrary: `fc.subarray(SIGNALS)` to pick any subset; assert the result is an integer in `[0, 100]`; minimum 100 iterations
     - **Validates: Requirements 5.2 (Property 1)**
 
-  - [~] 4.9 Implement `detector/route.ts`
+  - [x] 4.9 Implement `detector/route.ts`
     - Implement `decideRoute(flaggedBeforeScoring)` returning `"decoy"` when false (benign or first-flagging request) and `"maze"` when true
     - Verify with `tsc --noEmit`
     - _Requirements: 2.2, 6.1, 6.2, 6.3, 6.4, 10.1_
 
-  - [~] 4.10 Write property test for monotonic score
+  - [x] 4.10 Write property test for monotonic score
     - **Feature: siren-gateway, Property 2: Monotonic score** — exercises the pure session-update fold over `detectSignals` + `scoreSignals`
     - Arbitrary: a sequence of `RequestMeta` values (arbitrary method/path/body/userAgent/headerValues/ts); collect successive `ai_score` values and assert each is `>=` the previous; minimum 100 iterations
     - **Validates: Requirements 5.2, 4.6 (Property 2)**
 
-  - [~] 4.11 Write property test for latched flag implies maze routing
+  - [x] 4.11 Write property test for latched flag implies maze routing
     - **Feature: siren-gateway, Property 3: Latched flag implies maze routing** — exercises `decideRoute` + `latchFlag` over generated flag-transition sequences
     - Arbitrary: a sequence engineered to cross the threshold (e.g. a `bait_followed`-triggering request); assert the first-flagging request yields `route = "decoy", flagged = true` and every later request yields `route = "maze", flagged = true`; minimum 100 iterations
     - **Validates: Requirements 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 9.4 (Property 3)**
 
-- [~] 5. Checkpoint - detector unit + property tests pass
+- [x] 5. Checkpoint - detector unit + property tests pass
   - Ensure all tests pass with `vitest --run`, ask the user if questions arise.
 
 - [ ] 6. Wire the detector, routing, verify capture, burn, and prediction into the request lifecycle
