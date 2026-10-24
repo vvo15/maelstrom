@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "bait-safety-lint",
+      "trigger": "PostFileSave",
+      "matcher": "decoy/",
+      "action": {
+        "type": "command",
+        "command": "bash decoy/scripts/safety-lint.sh"
+      }
+    }
+  ]
+}
