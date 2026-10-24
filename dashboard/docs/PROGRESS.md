@@ -31,6 +31,7 @@ step by step, what has been built and what comes next.
 | Figma design tokens | ⬜ Not done — `theme.css` values are hand-picked placeholders |
 | Prompt C — hosted demo + Pages workflow | 🟨 Workflow, curation script and banner done; live once PR #2 merges and Pages is enabled |
 | Real gateway replays | ⬜ None recorded yet; only the synthetic sample is bundled |
+| Integration 1 (live WS vs. real gateway) | ✅ Passed 2026-10-24 against `origin/main` @ `035de66` |
 | Prompt D — docs-sync hook | ⬜ Not started |
 | README / KIRO.md / demo script | ⬜ Not started |
 
@@ -248,7 +249,20 @@ Session 3 additions:
 | Phone width | Chrome DevTools protocol, measured `scrollWidth` at 320/390/768/1440 px | **Found** the replay `<select>` overflowing to 534 px at 390 px; fixed in `App.css`; now 0 overflow at all four widths |
 | Workflow file | Parsed YAML; checked each action's latest major tag exists | Parses; uses checkout@v7, setup-node@v7, configure-pages@v6, upload-pages-artifact@v5, deploy-pages@v5. Not yet run on GitHub |
 
-**Not yet verified:** the Pages workflow running on GitHub, a run against the real gateway (only a fake WS server was used), and a
+Session 4 additions (Integration 1, real gateway + decoy from `origin/main` @ `035de66`):
+
+| Check | How | Result |
+| --- | --- | --- |
+| Frame shape | Node WS client; every frame checked with the dashboard's own `isSirenEvent` | 10/10 valid, one event per message (never arrays), no fields outside the contract |
+| Bait path | `python-httpx` UA: `/`, `/robots.txt`, `/.env`, `/backup/README_ADMIN.txt`, `/verify?agent=…` | `scripted_ua` + `bait_followed`, flagged at request 5, `model_claim`/`stated_goal` captured, later requests routed to maze |
+| Canary path | Reused `SIREN_DBPASS_…` from `/.env` as a Bearer token | `canary_reused` fires, session flagged |
+| Backlog on connect | New WS client after traffic | Gateway replays its buffer; dashboard shows all sessions on load |
+| Dashboard, Live | Production build in headless Chrome, nothing but the gateway running | Auto-connects to Live (no fallback); a new browser request through `:8080` appears as a new session within seconds |
+
+Expected gaps, not bugs: the maze is still Labyrinth's stub, so `est_usd_burned` is 0 and
+`prediction` is never set (the Attacker-mind panel stays empty). Re-check both at Integration 2.
+
+**Not yet verified:** the Pages workflow running on GitHub, Integration 2 (real maze, burn, prediction) (only a fake WS server was used), and a
 containerized Docker build (expected to fail on the `../../shared` type import — see gaps).
 
 ---
@@ -259,8 +273,8 @@ containerized Docker build (expected to fail on the `../../shared` type import �
   token set so swapping in Figma values is a values-only change.
 - **Bundled replay is synthetic.** `public/replays/sample-attack.jsonl` comes from mock
   data. Replace with a real gateway recording when Brain provides one.
-- **WebSocket message shape assumed.** We assume one `SirenEvent` per message (arrays also
-  handled). Confirm with Brain.
+- ~~**WebSocket message shape assumed.**~~ Confirmed at Integration 1: one `SirenEvent` per
+  message, no extra fields.
 - **Docker build caveat.** The build imports `../../shared/events.ts`, but the dashboard
   Dockerfile only copies `dashboard/`, so a containerized *build* would fail on that type
   import. Dev server is unaffected.
@@ -274,6 +288,19 @@ containerized Docker build (expected to fail on the `../../shared` type import �
 ## Session Log
 
 Newest entries first. Append a new entry at the end of each work session.
+
+### 2026-10-24 — Session 4: Integration 1 with Brain
+
+**Goal:** a browser request to `localhost:8080` shows up on the live dashboard.
+
+**Done:** ran decoy + gateway from `origin/main` in a throwaway worktree (`docker compose -p
+integ1`), validated every WS frame with the dashboard's own guard, exercised the bait and
+canary paths, and drove the production dashboard in headless Chrome in Live mode. All checks
+passed (see "Session 4 additions"). Closes the "WebSocket message shape assumed" gap: it is one
+`SirenEvent` per message.
+
+**Next session:** Integration 2 once Labyrinth's maze lands (burn and prediction); product
+rename to Maelstrom.
 
 ### 2026-10-24 — Session 3: Prompt C, hosted demo
 

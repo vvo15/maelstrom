@@ -104,6 +104,27 @@ Default autonomy: Auto. Surfaces used so far: Kiro IDE.
   "verified" claim had missed.
 - **Screenshot:** `img/stage-hosted-phone.png` (after the fix), `img/stage-hosted-desktop.png`.
 
+## 2026-10-24 — Integration 1 with Brain, vibe session in the IDE
+
+- **Feature used:** Kiro IDE (vibe chat, Autopilot) + Docker + headless Chrome via the
+  DevTools protocol.
+- **What I asked and why:** run the first integration gate, where a browser request to
+  `localhost:8080` has to appear on the live dashboard. I asked Kiro to prove it end to end
+  rather than just eyeball it.
+- **What it got right:**
+  - Ran the stack from `origin/main` in a throwaway git worktree, so my branch stayed
+    untouched.
+  - Checked every WebSocket frame with the dashboard's own `isSirenEvent` guard instead of
+    writing a second validator.
+  - Exercised both detection paths, the `/verify` bait and canary reuse.
+  - Confirmed the last open contract question: the gateway sends one event per message.
+- **What I corrected:** its first attacker script used a guessed token regex and grabbed the
+  session ID instead of the canary. It noticed, read `CANARY_REGEX` in `shared/contracts.ts`,
+  and re-ran with the real format.
+- **Compared to vibe coding:** the steering and the shared contract kept this fast. The
+  validator was already written for the dashboard, so the integration test reused it.
+- **Screenshot:** `img/stage-live-integration.png`.
+
 ---
 
 ## Backlog for this log (keep filling as we go)
