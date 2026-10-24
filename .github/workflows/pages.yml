@@ -42,8 +42,10 @@ jobs:
 
       - run: npm run build
         env:
-          # "/<repo>" on github.io, "" on a custom domain; vite.config.ts normalizes it.
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Project Pages live at https://<owner>.github.io/<repo>/. The repo name is read
+          # from the event at build time, so renaming the repo can't break asset URLs.
+          # vite.config.ts normalizes the slashes. A custom domain would need BASE_PATH=/.
+          BASE_PATH: /${{ github.event.repository.name }}/
           VITE_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
 
       - uses: actions/upload-pages-artifact@v5
