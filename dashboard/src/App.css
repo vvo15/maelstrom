@@ -326,6 +326,11 @@ select {
     padding-left: var(--space-3);
     padding-right: var(--space-3);
   }
+  /* Put the legend on its own row so the segments stay one connected group. */
+  .segmented legend {
+    float: none;
+    padding-bottom: var(--space-2);
+  }
   .metric {
     border-left: 0;
     border-top: var(--border-width) solid var(--border-subtle);

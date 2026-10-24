@@ -80,7 +80,7 @@ Five layers, left to right:
 - **Steering** (`.kiro/steering/`) — global rules plus one `fileMatch` file per module, so Kiro only loads the rules for the code it's touching.
 - **Hooks** (`.kiro/hooks/`) — e.g. maze property tests run on save, a contract typecheck guard, and a decoy safety lint.
 - **Property-based testing** derived directly from the EARS requirements.
-- See `KIRO.md` for the full write-up. <!-- TODO(Stage): link KIRO.md once compiled -->
+- See [KIRO.md](KIRO.md) for the full write-up.
 
 ## Credits
 
