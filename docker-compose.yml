@@ -1,0 +1,52 @@
+version: "3.9"
+
+networks:
+  internal:
+    driver: bridge
+  public:
+    driver: bridge
+
+services:
+  decoy:
+    build: ./decoy
+    networks:
+      - internal
+    # No published ports — only reachable from gateway on the internal network
+    restart: unless-stopped
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"   # HTTP proxy / maze
+      - "8090:8090"   # WebSocket event stream
+    env_file: .env
+    environment:
+      DECOY_URL: http://decoy
+    depends_on:
+      - decoy
+    networks:
+      - internal
+      - public
+    volumes:
+      - ./replays:/replays
+    restart: unless-stopped
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "5173:5173"
+    networks:
+      - public
+    restart: unless-stopped
+
+  attacker:
+    build: ./attacker
+    profiles:
+      - attack
+    networks:
+      - public   # can only reach gateway:8080, not decoy directly
+    env_file: .env
+    environment:
+      TARGET_URL: http://gateway:8080
+    depends_on:
+      - gateway
