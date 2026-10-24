@@ -94,6 +94,9 @@ and status is never conveyed by color alone (always text + icon).
 | `sources/validate.ts` | Runtime `SirenEvent` validation + `.jsonl` parsing |
 | `components/*` | TopBar, SessionList, Timeline, SignalChecklist, FlagAlert, AttackerMind, AttackChips, Icon, SourceControls |
 | `scripts/make-sample-replay.ts` | Generates the bundled sample replay from mock data |
+| `scripts/curate-replays.ts` | Copies a gateway recording into `public/replays/` (valid lines only) and rebuilds the index |
+| `scripts/replay-index.ts` | Shared `index.json` rebuild: keeps titles/order, features new files first, fails on empty replays |
+| `../.github/workflows/pages.yml` | Builds with the Pages base path and deploys on every push to `main` |
 
 ---
 
