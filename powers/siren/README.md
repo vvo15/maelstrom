@@ -3,23 +3,40 @@
 **Drop AI-agent honeypotting into any existing web app.**
 
 The `siren` Power packages everything a team needs to detect and trap AI agents
-probing their web service — steering rules, gateway integration guide, and the
-bait safety lint hook — all ready to install in a new project.
+probing their web service — steering rules, a gateway integration guide, and the
+bait safety-lint hook — ready to install in any project.
 
-## What's included
+This Power uses the legacy Kiro Power format (`POWER.md` at the package root),
+which the Kiro IDE and CLI both support.
 
-| File | Purpose |
-|---|---|
-| `steering/safety.md` | Safety rules: canary format, forbidden PHP functions, no real secrets |
-| `steering/gateway-integration.md` | Step-by-step guide to putting the Siren gateway in front of an existing app |
-| `hooks/bait-safety-lint.json` | PostFileSave hook that rejects dangerous code and bare credentials in decoy files |
+## Package layout
 
-## Quick start
+```
+powers/siren/
+├── POWER.md                          # entry point: metadata + onboarding steps
+├── README.md                         # this file
+├── steering/
+│   ├── safety.md                     # honeypot safety rules
+│   └── gateway-integration.md        # how to front an app with the gateway
+├── hooks/
+│   └── bait-safety-lint.kiro.hook    # PostFileSave lint for decoy files
+└── examples/
+    └── safety-lint.sh                # reference lint script
+```
 
-1. Copy `steering/` contents into your project's `.kiro/steering/`.
-2. Copy `hooks/bait-safety-lint.json` into `.kiro/hooks/` and update the path matcher to your decoy folder.
-3. Follow `steering/gateway-integration.md` to wire the gateway in front of your app.
-4. Run `docker compose up` — Siren starts detecting on port 8080.
+## Install
+
+### From a local directory
+1. Powers panel → **Add Custom Power** → Import from local directory
+2. Point at `powers/siren/`
+3. Click **Install**, then **Try**
+
+### From GitHub
+1. Powers panel → **Add Custom Power** → Import power from GitHub
+2. Enter the Siren repo URL (the Power lives in `powers/siren/`)
+
+Once installed, mention honeypots, decoys, or agent traps and Kiro activates the
+Power automatically.
 
 ## Canary format
 
@@ -29,10 +46,10 @@ Every fake credential must follow:
 SIREN_<KIND>_<first 10 hex chars of session id>
 ```
 
-Where `KIND` is `DBPASS`, `APIKEY`, or `ADMINTOKEN`. The gateway watches for
-this pattern in every request; a match scores +40 (`canary_reused`).
+`KIND` ∈ `DBPASS`, `APIKEY`, `ADMINTOKEN`. The gateway scores +40 on any canary reuse.
 
 ## Safety guarantee
 
-Nothing in a Siren decoy is exploitable. The safety lint hook enforces this
-automatically on every save.
+Nothing in a Siren decoy is exploitable. The safety-lint hook enforces this on
+every save — no `exec`/`system`/`eval`, no request input in file paths, no real
+secret formats.
