@@ -64,7 +64,7 @@ The system is split into a pure Detector layer (`detector/*`, deterministic, I/O
     - Verify the server boots, serves a proxied request end to end, and that `tsc --noEmit` passes
     - _Requirements: 2.1, 9.5, 9.8, 9.9_
 
-- [~] 3. Checkpoint - proxy + stream run green
+- [x] 3. Checkpoint - proxy + stream run green
   - Ensure `tsc` build passes and all tests pass with `vitest --run`, ask the user if questions arise.
 
 - [ ] 4. Pure Detector core
