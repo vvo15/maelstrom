@@ -19,6 +19,11 @@
 - `predict.ts` — `predictMock` (deterministic heuristic) + `predict` (LLM with
   mock fallback).
 - `prices.json` — per-token USD prices, dated, with a `default` row.
+- `attack.ts` — pure MITRE ATT&CK mapper (`techniquesForSession`,
+  `techniquesForEvents`). Maps detector signals + request paths to verified
+  ATT&CK IDs (T1595, T1595.003, T1552.001, T1078, T1190) with names, tactics,
+  canonical links, and a rationale. Importable by the dashboard so ATT&CK chips
+  are grounded in verified IDs instead of hand-rolled labels.
 
 ## Determinism strategy
 Mock pages are a pure function of `(session_id, path)`. The `SirenMaze` cache
@@ -28,6 +33,9 @@ first response per `(session_id, path)`. History and body never affect output.
 ## Safety strategy
 - Mock is the default; no key means no network.
 - Every body (mock and LLM) goes through `sanitize()` before return.
+- The attacker-controlled request path is HTML-escaped (`escapeHtml`) before it
+  is reflected into any maze page, so the honeypot itself cannot be turned into
+  a reflected-XSS vector against the dashboard that renders maze bodies.
 - The attacker and maze are the only LLM-calling code; the maze calls only the
   Anthropic endpoint and only in anthropic mode.
 - No `exec`/`eval`/shell; no working exploit content.
@@ -41,4 +49,10 @@ first response per `(session_id, path)`. History and body never affect output.
 - `ui.ts` — [THINK]/[REQ]/findings split-screen output.
 
 ## Testable properties (PBT, mock mode) — see maze.properties.test.ts
-Maps to Requirements 2, 5, 6, 8, 9, 10, 11.
+17 properties covering Requirements 2, 5, 6, 8, 9, 10, 11 plus:
+- reflected-XSS safety: a hostile request path is only ever reflected as escaped
+  text, never raw markup (fuzzed with breakout payloads)
+- sanitize stability under adversarial concatenation of real-secret shapes
+- anti-escape: no 200-page link is shallower than or equal to the request, so a
+  flagged session can never climb out of the maze
+- ATT&CK mapping emits only verified IDs, is deterministic, and de-duplicates

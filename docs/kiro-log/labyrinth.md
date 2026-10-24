@@ -37,3 +37,24 @@
 - Integration 2 with Brain: run scripted attacker through the gateway, confirm
   flag within 6 requests, maze entry, and burn/prediction on the dashboard.
 - Stretch: point Kiro Crew at the decoy and try to catch it.
+
+## Hardening pass (post-integration prep)
+- Feature used: PBT (adversarial) + steering
+- Found and fixed a reflected-XSS hole: the maze reflected the attacker-chosen
+  request path into HTML unescaped. For a defensive security tool whose pages
+  the dashboard renders, that's exactly the kind of flaw a judge would catch in
+  a security review. Added `escapeHtml()` in sanitize.ts and escaped every
+  reflection (path, links, error-page hint). Proved it with a fuzzed XSS-safety
+  property feeding `<script>`, `"><img onerror=...>`, `</title><svg onload=...>`
+  payloads — the reflected region never contains a raw breakout character.
+- Strengthened two more properties: sanitize stability under adversarial
+  concatenation of real-secret shapes, and an anti-escape property that no
+  200-page link is ever shallower than or equal to the request (a flagged
+  session literally cannot climb out of the maze).
+- Added `attack.ts`: a pure, verified MITRE ATT&CK mapper
+  (T1595 / T1595.003 / T1552.001 / T1078 / T1190), IDs verified on
+  attack.mitre.org, for the dashboard to import so ATT&CK chips are grounded in
+  real IDs with rationale, not hand-rolled guesses. Property-tested:
+  verified-IDs-only, deterministic, de-duplicated.
+- Property count went 9 -> 17, all passing in mock mode. Attacker still
+  type-checks clean. Full crawl still endless + byte-consistent.

@@ -60,3 +60,30 @@ export function containsRealSecret(text: string): boolean {
     return re.test(text);
   });
 }
+
+/**
+ * Escape HTML-significant characters so attacker-controlled input (the request
+ * path, mostly) can never break out of the surrounding markup. The maze serves
+ * attacker-chosen paths back inside HTML, so without this a path like
+ * `/<script>...` would be reflected verbatim -- a reflected-XSS hole in a tool
+ * that is supposed to be defensively airtight. Pure.
+ *
+ * Property (tested): escapeHtml(x) output contains none of < > " ' &-as-entity
+ * ambiguity; re-escaping is idempotent-safe because we encode & first.
+ */
+export function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
+ * True iff `text` still contains a raw HTML-breaking character.
+ * Used by tests to prove no reflected markup escapes the maze.
+ */
+export function containsRawHtml(text: string): boolean {
+  return /[<>"']/.test(text);
+}

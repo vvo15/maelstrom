@@ -1,5 +1,5 @@
 import { canaryFor, DECOY_HEADERS, type CanaryKind, type MazeResponse } from "../../../shared/contracts";
-import { sanitize } from "./sanitize";
+import { sanitize, escapeHtml } from "./sanitize";
 
 // Allowed HTTP statuses the maze may return.
 export const ALLOWED_STATUS = [200, 301, 302, 401, 403, 404, 500] as const;
@@ -131,9 +131,14 @@ export function generateMock(sessionId: string, path: string): MazeResponse {
 
   const headers: Record<string, string> = { ...DECOY_HEADERS, "content-type": "text/html; charset=utf-8" };
 
+  // The requested path is attacker-controlled, so every reflection of it (and
+  // of derived links) is HTML-escaped before it enters the markup. Links keep
+  // a raw copy for the href attribute value, which is also escaped.
+  const safePath = escapeHtml(path);
+
   if (status !== 200) {
     // Error pages still hint at a deeper path to keep the agent crawling.
-    const hint = links[0];
+    const hint = escapeHtml(links[0]);
     const body = sanitize(
       `<!DOCTYPE html><html><head><title>${status} — ${title}</title></head>` +
         `<body><h1>${status}</h1><p>${blurb}</p>` +
@@ -148,18 +153,21 @@ export function generateMock(sessionId: string, path: string): MazeResponse {
   const kinds: CanaryKind[] = ["DBPASS", "APIKEY", "ADMINTOKEN"];
   const kind = kinds[Math.floor(rng() * kinds.length) % kinds.length];
   const canaryBlock = includeCanary
-    ? `<pre class="leak"># recovered from ${path}\n${kind.toLowerCase()}=${canaryFor(sessionId, kind)}</pre>`
+    ? `<pre class="leak"># recovered from ${safePath}\n${kind.toLowerCase()}=${canaryFor(sessionId, kind)}</pre>`
     : "";
 
   const linkList = links
-    .map((l) => `<li><a href="${l}">${l}</a></li>`)
+    .map((l) => {
+      const safe = escapeHtml(l);
+      return `<li><a href="${safe}">${safe}</a></li>`;
+    })
     .join("");
 
   const body = sanitize(
     `<!DOCTYPE html><html><head><title>${title}</title></head>` +
       `<body><h1>${title}</h1><p>${blurb}</p>` +
       `${canaryBlock}` +
-      `<h2>Index of ${path}</h2><ul>${linkList}</ul>` +
+      `<h2>Index of ${safePath}</h2><ul>${linkList}</ul>` +
       `</body></html>`,
     sessionId
   );

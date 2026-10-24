@@ -18,10 +18,16 @@
 - [x] 11. `maze-property-tests` hook: run PBT on save under `gateway/src/maze/`.
 - [x] 12. Attacker in `attacker/`: host-locked `http_request`, scripted mode,
       llm mode (vanilla pentester prompt), split-screen UI, Dockerfile.
+- [x] 13. HTML-escape reflected request paths (reflected-XSS fix) + fuzzed
+      XSS-safety property; adversarial sanitize-stability property; anti-escape
+      link property.
+- [x] 14. `attack.ts`: pure MITRE ATT&CK mapper with verified IDs, for the
+      dashboard to import; property-tested (verified-IDs-only, deterministic,
+      de-duplicated).
 
 ## Done when
 - `SIREN_LLM=mock` serves an endless, consistent maze with no key. (verified)
-- Every property test passes. (verified: 9/9)
+- Every property test passes. (verified: 17/17)
 - Both attacker modes run end to end (scripted standalone; llm falls back to
   scripted without a key). Full flag+maze+dashboard run depends on Brain's
   gateway at Integration 2.
